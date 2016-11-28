@@ -287,13 +287,13 @@
 	scl-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
 	sda-gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
 
-	gpio6: tsgpio@28 {
-		compatible = "technologic,tsgpio";
+	gpio6: gpio@28 {
+		compatible = "technologic,ts7970-gpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
 		base = <160>;
-		ngpio = /bits/ 16 <128>;
+		ngpio = <128>;
 	};
 
 	rtc: m41t00s@68 {
