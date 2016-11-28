@@ -567,6 +567,7 @@ static int kszphy_probe(struct phy_device *phydev)
 		}
 	}
 
+	phydev->dev_flags |= MICREL_PHY_50MHZ_CLK;
 	/* Support legacy board-file configuration */
 	if (phydev->dev_flags & MICREL_PHY_50MHZ_CLK) {
 		priv->rmii_ref_clk_sel = true;
