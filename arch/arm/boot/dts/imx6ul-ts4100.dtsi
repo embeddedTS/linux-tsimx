@@ -210,12 +210,14 @@
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 	fsl,uart-has-rtscts;
+	fsl,uart-tx-enable-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* SPARE_1 */
 };
 
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
 	status = "okay";
+	fsl,uart-has-rtscts;
 };
 
 &uart5 {
