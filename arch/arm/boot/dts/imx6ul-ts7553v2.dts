@@ -37,6 +37,29 @@
 			gpios = <&gpio4 19 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
+
+		/* The following are meant to be userspace controlled IO. The
+		 * kernel does not allow setting default state of GPIO, but
+		 * the default state of LEDs can be set, which is why the LED
+		 * subsystem is used.
+		 */
+		en-usb-5v {
+			label = "en-usb-5v";
+			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+
+		en-modem-5v {
+			label = "en-modem-5v";
+			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		en-xbee-3v3 {
+			label = "en-xbee-3v3";
+			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
 	};
 
 	reserved-memory {
@@ -101,14 +124,6 @@
 			enable-active-high;
 		};
 	};
-
-	/*pps {
-		compatible = "pps-gpio";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_pps>;
-		gpios = <&gpio1 26 GPIO_ACTIVE_HIGH>;
-		status = "okay";
-	};*/
 };
 
 &cpu0 {
@@ -143,8 +158,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi4>;
 	status = "okay";
-/*KRIS: wifi reset pin? */
 
+	/* TODO: Add IRQ, RESET, and chip EN (EN_WIFI_PWR) support in DTS */
 	wilc_spi@0 {
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
@@ -154,10 +169,14 @@
 };
 
 &fec1 {
+	/* TODO: add eth phy pwr? */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet1>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy0>;
+	phy-reset-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
+	/* Maybe able to do 500us since linux would be a "warm reset" */
+	phy-reset-duration = <10>; 
 	status = "okay";
 	mdio {
 		#address-cells = <1>;
@@ -240,7 +259,7 @@
 };
 
 &usbotg1 {
-/*KRIS: Use dr_mode = "device" ?*/
+/*TODO: Use dr_mode = "device" ?*/
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb_otg1_id>;
@@ -301,15 +320,6 @@
 	status = "okay";
 	scl-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
 	sda-gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
-
-	gpio6: gpio@28 {
-		compatible = "technologic,ts7970-gpio";
-		reg = <0x28>;
-		#gpio-cells = <2>;
-		gpio-controller;
-		base = <160>;
-		ngpio = <128>;
-	};
 };
 
 &snvs_rtc {
@@ -328,22 +338,45 @@
 	imx6ul-ts7180 {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-	/*KRIS: Add EN_232_TRANS */
-				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18    0x1b020 /* SPARE_1 */
-				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19    0x1b020 /* SPARE_2 */
-
-
-				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01     0x17059 /* GPIO_1_ADC */
-				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09     0x17059 /* GPIO_9_ADC */
-				MX6UL_PAD_NAND_DQS__GPIO4_IO16       0x1b020 /* SPARE_3 */
+				MX6UL_PAD_JTAG_TCK__GPIO1_IO14       0x1b020
+				MX6UL_PAD_JTAG_TDI__GPIO1_IO13       0x1b020
+				MX6UL_PAD_JTAG_TDO__GPIO1_IO12       0x1b020
+				MX6UL_PAD_JTAG_TMS__GPIO1_IO11       0x1b020
+				MX6UL_PAD_JTAG_TRST_B__GPIO1_IO15    0x1b020
+				MX6UL_PAD_CSI_DATA00__GPIO4_IO21     0x1b020 /* KEYPAD_0 */
+				MX6UL_PAD_CSI_DATA01__GPIO4_IO22     0x1b020 /* KEYPAD_1 */
+				MX6UL_PAD_CSI_DATA02__GPIO4_IO23     0x1b020 /* KEYPAD_2 */
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24     0x1b020 /* KEYPAD_3 */
+				MX6UL_PAD_UART2_RTS_B__GPIO1_IO23    0x1b020 /* EN_232_TRANS */
+				/* TODO: Enable PD on DETECT_9471 */
+				MX6UL_PAD_CSI_DATA07__GPIO4_IO28     0x1b020 /* DETECT_9471 */
 				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00   0x1b020 /* POWER_FAIL */
-				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01   0x1b020 /* FPGA_IRQ */
-				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02   0x1b020 /* EN_FPGA_PWR */
-				MX6UL_PAD_NAND_WP_B__GPIO4_IO11      0x1b020 /* FPGA_RESET# */
-				MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04   0x1b020 /* JTAG_FPGA_TDO */
-				MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05   0x1b020 /* JTAG_FPGA_TDI */
-				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06   0x1b020 /* JTAG_FPGA_TMS */
-				MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07   0x1b020 /* JTAG_FPGA_TCK */
+				MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08   0x1b020 /* EN_RELAY */
+				MX6UL_PAD_ENET2_TX_CLK__GPIO2_IO14    0x1b020 /* XBEE_DIO_8 */
+				MX6UL_PAD_ENET2_RX_DATA0__GPIO2_IO08 0x1b020 /* XBEE_DIO_7 */
+				MX6UL_PAD_ENET2_RX_DATA1__GPIO2_IO09 0x1b020 /* XBEE_DIO_6 */
+				/* TODO: Verify this clk */
+				MX6UL_PAD_ENET2_TX_DATA0__REF_CLK_24M 0x1b020 /* USB Hhub 24MHz */
+				MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12 0x1b020 /* SILAB_C2_RESET */
+				/* TODO: Add PU on PWM_MODE and set low when sleeping */
+				MX6UL_PAD_ENET2_TX_EN__GPIO2_IO13    0x1b020 /* FORCE_REG_PWM_MODE */
+				MX6UL_PAD_LCD_DATA02__GPIO3_IO07     0x1b020 /* 6UL_TO_USB_DEV */
+				/* TODO: Do not set pull resistor */	
+				MX6UL_PAD_LCD_DATA03__GPIO3_IO08     0x1b020 /* 6UL_FORCE_5V_ON */
+				MX6UL_PAD_LCD_DATA04__GPIO3_IO09     0x1b020 /* SILAB_C2_CLK */
+				MX6UL_PAD_LCD_DATA05__GPIO3_IO10     0x1b020 /* SILAB_CS_DATA# */
+				MX6UL_PAD_LCD_DATA06__GPIO3_IO11     0x1b020 /* NO_CHRG_JMP# */
+				MX6UL_PAD_LCD_DATA12__GPIO3_IO17     0x1b020 /* SD_BOOT_JMP# */
+				MX6UL_PAD_LCD_DATA13__GPIO3_IO18     0x1b020 /* PUSH_SW_CPU# */
+				MX6UL_PAD_LCD_DATA14__GPIO3_IO19     0x1b020 /* U_BOOT_JMP#_ */
+				MX6UL_PAD_LCD_DATA15__GPIO3_IO20     0x1b020 /* XBEE_RESET# */
+				MX6UL_PAD_LCD_CLK__GPIO3_IO00        0x1b020 /* USB_HUB_RESET */
+				/* TODO: Add PU on the strap pins */
+				MX6UL_PAD_LCD_DATA18__GPIO3_IO23     0x1b020 /* RES_STRAP_0 */
+				MX6UL_PAD_LCD_DATA19__GPIO3_IO24     0x1b020 /* RES_STRAP_1 */
+				MX6UL_PAD_LCD_DATA22__GPIO3_IO27     0x1b020 /* RES_STRAP_2 */
+				MX6UL_PAD_LCD_DATA23__GPIO3_IO28     0x1b020 /* RES_STRAP_3 */
+				MX6UL_PAD_LCD_ENABLE__GPIO3_IO01     0x1b020 /* WIFI_PRESENT# */
 			>;
 		};
 
@@ -391,6 +424,7 @@
 
 		pinctrl_uart3: uart3grp {
 			fsl,pins = <
+				/* TODO: Enable PU on RX and CTS/RTS? */
 				MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX	0x1b0b1
 				MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX	0x1b0b1
 				MX6UL_PAD_UART3_CTS_B__UART3_DCE_CTS	0x1b0b1
@@ -430,24 +464,16 @@
 
 		pinctrl_uart8: uart8grp {
 			fsl,pins = <
+				/* TODO: Enable PU on XBee RX */
 				MX6UL_PAD_LCD_DATA21__UART8_DCE_RX	0x1b0b1
 				MX6UL_PAD_LCD_DATA20__UART8_DCE_TX	0x1b0b1
 			>;
 		};
 
-/*KRIS: this can be removed, set JTAG to GPIO? */
-		pinctrl_sai2: sai2grp {
-			fsl,pins = <
-				MX6UL_PAD_JTAG_TDI__SAI2_TX_BCLK	0x17088
-				MX6UL_PAD_JTAG_TDO__SAI2_TX_SYNC	0x17088
-				MX6UL_PAD_JTAG_TRST_B__SAI2_TX_DATA	0x11088
-				MX6UL_PAD_JTAG_TCK__SAI2_RX_DATA	0x11088
-				MX6UL_PAD_JTAG_TMS__SAI2_MCLK		0x17088
-			>;
-		};
-
 		pinctrl_enet1: enet1grp {
 			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO07__ENET1_MDC         0x1b0b0
+				MX6UL_PAD_GPIO1_IO06__ENET1_MDIO        0x1b0b0
 				MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN	0x1b0b0
 				MX6UL_PAD_ENET1_RX_ER__ENET1_RX_ER	0x1b0b0
 				MX6UL_PAD_ENET1_RX_DATA0__ENET1_RDATA00	0x1b0b0
@@ -456,23 +482,6 @@
 				MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00	0x1b0b0
 				MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01	0x1b0b0
 				MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1	0x4001b031
-			>;
-		};
-
-/*KRIS: remove me at some point! */
-		pinctrl_enet2: enet2grp {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO07__ENET2_MDC		0x1b0b0
-				MX6UL_PAD_GPIO1_IO06__ENET2_MDIO	0x1b0b0
-				MX6UL_PAD_JTAG_MOD__GPIO1_IO10      0x1f0b0
-				MX6UL_PAD_ENET2_RX_EN__ENET2_RX_EN	0x1b0b0
-				MX6UL_PAD_ENET2_RX_ER__ENET2_RX_ER	0x1b0b0
-				MX6UL_PAD_ENET2_RX_DATA0__ENET2_RDATA00	0x1b0b0
-				MX6UL_PAD_ENET2_RX_DATA1__ENET2_RDATA01	0x1b0b0
-				MX6UL_PAD_ENET2_TX_EN__ENET2_TX_EN	0x1b0b0
-				MX6UL_PAD_ENET2_TX_DATA0__ENET2_TDATA00	0x1b0b0
-				MX6UL_PAD_ENET2_TX_DATA1__ENET2_TDATA01	0x1b0b0
-				MX6UL_PAD_ENET2_TX_CLK__ENET2_REF_CLK2	0x4001b031
 			>;
 		};
 
@@ -556,24 +565,28 @@
 			>;
 		};
 
+		/* TODO: Add in support for the graphical LCD */
+		/* Add additional control signals here, not consumed in hog */
 		pinctrl_ecspi3: ecspi3grp {
 			fsl,pins = <
-				MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x10b0 // SPI_3_FPGA_CS#
+				MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x10b0 /* SPI_3_FPGA_CS# CS0*/
 				MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK   0x10b0
 				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x10b0
 				MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x10b0
-				MX6UL_PAD_ENET2_RX_ER__GPIO2_IO15   0x10b0 // SPI_3_OFF_BD_CS#
+				MX6UL_PAD_ENET2_RX_ER__GPIO2_IO15   0x10b0 /* HD1_SPI_CS# CS1 */
 			>;
 		};
 
 		pinctrl_ecspi4: ecspi4grp {
 			fsl,pins = <
-/* KRIS: wifi reset? */
 				MX6UL_PAD_NAND_DATA04__ECSPI4_SCLK  0x10b0
 				MX6UL_PAD_NAND_DATA05__ECSPI4_MOSI  0x10b0
 				MX6UL_PAD_NAND_DATA06__ECSPI4_MISO  0x10b0
-				MX6UL_PAD_NAND_DATA07__GPIO4_IO09   0x10b0  // WIFI chip select
-				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01  0x1b020 // SPARE_4/WIFI_IRQ
+				MX6UL_PAD_NAND_DATA07__GPIO4_IO09   0x10b0  /* WIFI CS# */
+				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01  0x1b020 /* WIFI_IRQ# */
+				MX6UL_PAD_NAND_ALE__GPIO4_IO10      0x1b020 /* WIFI_RESET# */
+				/* TODO: Enable PU on IRQ */
+				MX6UL_PAD_CSI_DATA05__GPIO4_IO26    0x1b020 /* CHIP_EN (EN_WIFI_PWR) */
 			>;
 		};
 
