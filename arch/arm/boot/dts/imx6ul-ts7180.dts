@@ -239,6 +239,12 @@
 	status = "okay";
 };
 
+&uart8 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart8>;
+	status = "okay";
+};
+
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	pinctrl-names = "default";
@@ -412,6 +418,13 @@
 			fsl,pins = <
 				MX6UL_PAD_LCD_DATA17__UART7_DCE_RX	0x1b0b1
 				MX6UL_PAD_LCD_DATA16__UART7_DCE_TX	0x1b0b1
+			>;
+		};
+
+		pinctrl_uart8: uart8grp {
+			fsl,pins = <
+			   MX6UL_PAD_LCD_DATA21__UART8_DCE_RX	0x1b0b1  /* RXD_GPS */
+			   MX6UL_PAD_LCD_DATA20__UART8_DCE_TX	0x1b0b1	/* TXD_GPS */
 			>;
 		};
 
