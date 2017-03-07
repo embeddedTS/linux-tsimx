@@ -404,9 +404,9 @@ static void imx_stop_tx(struct uart_port *port)
 
 	    if (sport->txenable_gpio) {
 	       if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-	          gpiod_set_value(sport->txenable_gpio, 0);
-	       else
 	          gpiod_set_value(sport->txenable_gpio, 1);
+	       else
+	          gpiod_set_value(sport->txenable_gpio, 0);
 	    } else {
 		   temp = readl(port->membase + UCR2);
 		   if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
@@ -612,10 +612,10 @@ static void imx_start_tx(struct uart_port *port)
 		/* enable transmitter and shifter empty irq */
 
 		if (sport->txenable_gpio) {
-		   if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-	         gpiod_set_value(sport->txenable_gpio, 0);
-	      else
+		   if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
 	         gpiod_set_value(sport->txenable_gpio, 1);
+	      else
+	         gpiod_set_value(sport->txenable_gpio, 0);
 		} else {
 
          temp = readl(port->membase + UCR2);
@@ -1364,7 +1364,7 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
 				if (!(port->rs485.flags &
 				      SER_RS485_RTS_AFTER_SEND)) {
 				   if (sport->txenable_gpio)
-	               gpiod_set_value(sport->txenable_gpio, 1);
+	               gpiod_set_value(sport->txenable_gpio, 0);
 	            else
 					   ucr2 |= UCR2_CTS;
 			   }
@@ -1378,7 +1378,7 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
 		/* disable transmitter */
 		if (!(port->rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
 		   if (sport->txenable_gpio)
-	         gpiod_set_value(sport->txenable_gpio, 1);
+	         gpiod_set_value(sport->txenable_gpio, 0);
 			else
 			   ucr2 |= UCR2_CTS;
       }
@@ -1632,9 +1632,9 @@ static int imx_rs485_config(struct uart_port *port,
 		/* disable transmitter */
 		if (sport->txenable_gpio) {
 		   if (rs485conf->flags & SER_RS485_RTS_AFTER_SEND)
-		      gpiod_set_value(sport->txenable_gpio, 0);
-		   else
 		      gpiod_set_value(sport->txenable_gpio, 1);
+		   else
+		      gpiod_set_value(sport->txenable_gpio, 0);
 		} else {
 		   temp = readl(sport->port.membase + UCR2);
 		   temp &= ~UCR2_CTSC;
@@ -1982,8 +1982,9 @@ static int serial_imx_probe_dt(struct imx_port *sport,
 
 	   if ((sport->txenable_gpio =
 	      gpiod_get_index(&pdev->dev, "fsl,uart-tx-enable", 0))) {
-	      if (!IS_ERR(sport->txenable_gpio))
-            gpiod_direction_output(sport->txenable_gpio, 0);
+	      if (!IS_ERR(sport->txenable_gpio)) {
+            gpiod_direction_output(sport->txenable_gpio, 0);  
+            }
          else
             sport->txenable_gpio = NULL;
       }
@@ -2057,6 +2058,7 @@ static int serial_imx_probe(struct platform_device *pdev)
 	sport->port.rs485_config = imx_rs485_config;
 	sport->port.rs485.flags =
 		SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX;
+
 	sport->port.flags = UPF_BOOT_AUTOCONF;
 	init_timer(&sport->timer);
 	sport->timer.function = imx_timeout;
