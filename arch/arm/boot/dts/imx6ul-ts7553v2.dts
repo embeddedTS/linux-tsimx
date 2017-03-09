@@ -218,6 +218,9 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
+
+	fsl,uart-has-rtscts;
+	fsl,uart-tx-enable-gpios = <&gpio1 22 GPIO_ACTIVE_LOW>;
 };
 
 &uart3 {
@@ -358,6 +361,7 @@
 				MX6UL_PAD_ENET2_TX_CLK__GPIO2_IO14   0x1b020 /* XBEE_DIO_8 */
 				MX6UL_PAD_ENET2_RX_DATA0__GPIO2_IO08 0x1b020 /* XBEE_DIO_7 */
 				MX6UL_PAD_ENET2_RX_DATA1__GPIO2_IO09 0x1b020 /* XBEE_DIO_6 */
+				/* TODO: Add en_xbee and en_modem power GPIO pins */
 				/* TODO: Verify this clk */
 				MX6UL_PAD_ENET2_TX_DATA0__REF_CLK_24M 0x1b020 /* USB Hhub 24MHz */
 				MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12 0x1a020 /* SILAB_C2_RESET */
@@ -418,7 +422,7 @@
 			fsl,pins = <
 				MX6UL_PAD_UART2_TX_DATA__UART2_DCE_TX	0x1b0b1
 				MX6UL_PAD_UART2_RX_DATA__UART2_DCE_RX	0x1b0b1
-				MX6UL_PAD_UART2_CTS_B__UART2_DCE_CTS	0x1b0b1
+				MX6UL_PAD_UART2_CTS_B__GPIO1_IO22	0x1b0b1
 			>;
 		};
 
