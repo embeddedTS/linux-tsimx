@@ -158,11 +158,17 @@
 	pinctrl-0 = <&pinctrl_ecspi4>;
 	status = "okay";
 
-	/* TODO: Add IRQ, RESET, and chip EN (EN_WIFI_PWR) support in DTS */
+	/*
+	 * NOTE: DT mod to driver does lookup by name. Needs to be named
+	 * "wilc_spi" as it is below!
+	 */
 	wilc_spi@0 {
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
+		wilc3000,reset-gpios = <&gpio4 10 0>;
+		wilc3000,chip-en-gpios = <&gpio4 26 0>;
+		wilc3000,irq-gpios = <&gpio5 01 0>;
 		status = "okay";
 	};
 };
@@ -584,7 +590,7 @@
 				MX6UL_PAD_NAND_DATA04__ECSPI4_SCLK  0x1b020
 				MX6UL_PAD_NAND_DATA05__ECSPI4_MOSI  0x1b020
 				MX6UL_PAD_NAND_DATA06__ECSPI4_MISO  0x1b020
-				MX6UL_PAD_NAND_DATA07__GPIO4_IO09   0x1b020  /* WIFI CS# */
+				MX6UL_PAD_NAND_DATA07__GPIO4_IO09   0x1b020 /* WIFI CS# */
 				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01  0x1b020 /* WIFI_IRQ# */
 				MX6UL_PAD_NAND_ALE__GPIO4_IO10      0x1b020 /* WIFI_RESET# */
 				MX6UL_PAD_CSI_DATA05__GPIO4_IO26    0x1b020 /* CHIP_EN (EN_WIFI_PWR) */
