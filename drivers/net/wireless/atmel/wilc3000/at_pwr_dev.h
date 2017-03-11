@@ -51,18 +51,6 @@
 #define N_INTR			0x00000008
 #define N_RXQ			0x00000010
 
-#if defined(WILC_SDIO) /* TS-7990 uses SDIO */
-
-#define GPIO_NUM_RESET 		237
-#define GPIO_NUM_CHIP_EN 	238
-
-#else /* TS-4100, TS-7180, etc 6ul boards that use SPI */
-
-#define GPIO_NUM_RESET 		160 /*181*/
-#define GPIO_NUM_CHIP_EN 	161 /*180*/
-
-#endif
-
 enum BUS_ACQUIRE {
 	ACQUIRE_ONLY		= 0,
 	ACQUIRE_AND_WAKEUP	= 1,

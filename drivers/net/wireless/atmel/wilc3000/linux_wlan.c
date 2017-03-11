@@ -26,6 +26,7 @@
 #include <linux/workqueue.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+#include <linux/of_gpio.h>
 #include <asm/gpio.h>
 
 #include <linux/kthread.h>
@@ -49,6 +50,9 @@
 #endif /* WILC_SDIO */
 #include "at_pwr_dev.h"
 #include "linux_wlan.h"
+
+/* GPIO number for IRQ */
+int irq_gpio;
 
 #ifdef DISABLE_PWRSAVE_AND_SCAN_DURING_IP
 bool g_obtainingIP = false;
@@ -643,68 +647,101 @@ static int init_irq(struct linux_wlan *p_nic)
 {
 	int ret = 0;
 	struct linux_wlan *nic = p_nic;
+	struct device_node *node;
+
+	/* Get GPIO numbers from DT */
+	node = of_find_node_by_name(NULL, "wilc_spi");
+	if (node == NULL) {
+		PRINT_ER("Couldn't get device node\n");
+		return -EIO;
+	}
+	if (!(irq_gpio = of_get_named_gpio(node, "wilc3000,irq-gpios", 0))) {
+		PRINT_ER("Failed to get IRQ GPIO\n");
+		return -EIO;
+	}
 
 	/*
 	 * initialize GPIO and register IRQ num
 	 */
-	if ((gpio_request(GPIO_NUM, "WILC_INTR") == 0) &&
-	    (gpio_direction_input(GPIO_NUM) == 0)) {
-#if defined (PANDA_BOARD)
-		gpio_export(GPIO_NUM, 1);
-		nic->dev_irq_num = OMAP_GPIO_IRQ(GPIO_NUM);
-		irq_set_irq_type(nic->dev_irq_num, IRQ_TYPE_LEVEL_LOW);
-#else
-		nic->dev_irq_num = gpio_to_irq(GPIO_NUM);
-#endif
-	} else {
-		ret = -1;
-		PRINT_ER("could not obtain gpio for WILC_INTR\n");
+	if (gpio_request(irq_gpio, "WILC_INTR") != 0) {
+		PRINT_ER("Failed to request IRQ GPIO\n");
+		return -EIO;
 	}
+	gpio_direction_input(irq_gpio);
 
-#if (RX_BH_TYPE == RX_BH_THREADED_IRQ)
-	if ((ret != -1) &&
-	    (request_threaded_irq(g_linux_wlan->dev_irq_num, isr_uh_routine,
-			       isr_bh_routine, IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-				 "WILC_IRQ", nic)) < 0) {
+#if defined (PANDA_BOARD)
+	gpio_export(irq_gpio, 1);
+	nic->dev_irq_num = OMAP_GPIO_IRQ(irq_gpio);
+	irq_set_irq_type(nic->dev_irq_num, IRQ_TYPE_LEVEL_LOW);
 #else
-		/*Request IRQ*/
-	if ((ret != -1) && (request_irq(nic->dev_irq_num, isr_uh_routine,
-				     IRQF_TRIGGER_LOW, "WILC_IRQ", nic) < 0)) {
+	nic->dev_irq_num = gpio_to_irq(irq_gpio);
 #endif
-		PRINT_ER("Failed to request IRQ for GPIO: %d\n", GPIO_NUM);
-		ret = -1;
+
+
+	/*Request IRQ*/
+#if (RX_BH_TYPE == RX_BH_THREADED_IRQ)
+	if ((request_threaded_irq(g_linux_wlan->dev_irq_num, isr_uh_routine,
+	  isr_bh_routine, IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+	   "WILC_IRQ", nic)) < 0) {
+#else
+	if ((request_irq(nic->dev_irq_num, isr_uh_routine, IRQF_TRIGGER_LOW,
+	  "WILC_IRQ", nic) < 0)) {
+#endif
+		PRINT_ER("Failed to request IRQ for GPIO: %d\n", irq_gpio);
+		ret = -EIO;
 	} else {
 		PRINT_D(INT_DBG, "IRQ request succeeded IRQ-NUM= %d on GPIO: %d\n",
-			g_linux_wlan->dev_irq_num, GPIO_NUM);
+		  g_linux_wlan->dev_irq_num, irq_gpio);
 	}
 
 	return ret;
 }
 #else
+
+/*XXX: KKB 03/15/2017
+ * Note that this function variant for SDIO has NOT been tested after being
+ * modified for pulling in the IRQ number from DTS!
+ *
+ * This could probably be cleaned up and merged in to the above function
+ * since this driver is already macro hell. It would be easy enough to do
+ */
 static int init_irq(struct linux_wlan *p_nic)
 {
 	int ret = 0;
 	struct linux_wlan *nic = p_nic;
+	struct device_node *node;
+
+	/* Get GPIO numbers from DT */
+	node = of_find_node_by_name(NULL, "wilc_spi");
+	if (node == NULL) {
+		PRINT_ER("Couldn't get device node\n");
+		return -EIO;
+	}
+	if (!(irq_gpio = of_get_named_gpio(node, "wilc3000,irq-gpios", 0))) {
+		PRINT_ER("Failed to get IRQ GPIO\n");
+		return -EIO;
+	}
 
 	/*
 	 * initialize GPIO and register IRQ num
 	 */
-	if ((gpio_request(GPIO_NUM, "WILC_INTR") == 0) &&
-	    (gpio_direction_input(GPIO_NUM) == 0)) {
-
-	nic->dev_irq_num = gpio_to_irq(GPIO_NUM);
-	} else {
-		ret = -1;
-		PRINT_ER("could not obtain gpio for WILC_INTR\n");
+	if (gpio_request(irq_gpio, "WILC_INTR") != 0) {
+		PRINT_ER("Failed to request IRQ GPIO\n");
+		return -EIO;
 	}
-	/*Request IRQ*/
-	if ((ret != -1) && (request_irq(nic->dev_irq_num, host_wakeup_isr,
-				     IRQF_TRIGGER_FALLING | IRQF_NO_SUSPEND, "WILC_IRQ", nic) < 0)) {
-		PRINT_ER("Failed to request IRQ for GPIO: %d\n", GPIO_NUM);
-		ret = -1;
+	gpio_direction_input(irq_gpio);
+
+	nic->dev_irq_num = gpio_to_irq(irq_gpio);
+
+
+
+	if ((request_irq(nic->dev_irq_num, host_wakeup_isr,
+	  IRQF_TRIGGER_FALLING | IRQF_NO_SUSPEND, "WILC_IRQ", nic) < 0)) {
+		PRINT_ER("Failed to request IRQ for GPIO: %d\n", irq_gpio);
+		ret = -EIO;
 	} else {
 		PRINT_D(INT_DBG, "IRQ request succeeded IRQ-NUM= %d on GPIO: %d\n",
-			g_linux_wlan->dev_irq_num, GPIO_NUM);
+			g_linux_wlan->dev_irq_num, irq_gpio);
 		enable_irq_wake(nic->dev_irq_num);
 	}
 
@@ -717,7 +754,7 @@ static void deinit_irq(struct linux_wlan *nic)
 	/* Deintialize IRQ */
 	if (&g_linux_wlan->dev_irq_num != 0) {
 		free_irq(g_linux_wlan->dev_irq_num, g_linux_wlan);
-		gpio_free(GPIO_NUM);
+		gpio_free(irq_gpio);
 	}
 }
 

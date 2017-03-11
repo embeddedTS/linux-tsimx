@@ -21,6 +21,7 @@
 #include "host_interface.h"
 #include "wilc_wlan.h"
 
+#include <linux/of_gpio.h>
 #include <linux/gpio.h>
 #include <linux/version.h>
 #include <linux/module.h>
@@ -39,6 +40,10 @@
 #else
 #include "linux_wlan_spi.h"
 #endif /* WILC_SDIO */
+
+/* GPIO definitions */
+int reset_gpio;
+int chip_en_gpio;
 
 typedef int (cmd_handler)(int);
 
@@ -106,6 +111,7 @@ static const struct file_operations pugs_fops = {
 int at_pwr_dev_init(void)
 {
 	int ret = 0;
+	struct device_node *node;
 
 	PRINT_D(PWRDEV_DBG, "at_pwr_dev: registered\n");
 	memset(&pwr_dev, 0, sizeof(pwr_dev));
@@ -134,6 +140,36 @@ int at_pwr_dev_init(void)
 		return ret;
 	}
 
+	/* Get GPIO numbers from DT */
+#ifdef WILC_SDIO
+	node = of_find_node_by_name(NULL, "wilc_sdio");
+#else
+	node = of_find_node_by_name(NULL, "wilc_spi");
+#endif
+
+	if (node == NULL) {
+		PRINT_ER("Couldn't get device node\n");
+		return -EIO;
+	}
+
+	if (!(reset_gpio = of_get_named_gpio(node, "wilc3000,reset-gpios", 0))) {
+		PRINT_ER("Failed to get reset GPIO\n");
+		return -EIO;
+	}
+	if (gpio_request(reset_gpio, "wilc3000_reset") != 0) {
+		PRINT_ER("Failed to request reset GPIO\n");
+		return -EIO;
+	}
+
+	if (!(chip_en_gpio = of_get_named_gpio(node, "wilc3000,chip-en-gpios", 0))) {
+		PRINT_ER("Failed to get chip EN GPIO\n");
+		return -EIO;
+	}
+	if (gpio_request(chip_en_gpio, "wilc3000_chip_en") != 0) {
+		PRINT_ER("Failed to request chip EN GPIO\n");
+		return -EIO;
+	}
+
 #ifdef WILC_SDIO
 	sema_init(&sdio_probe_sync, 0);
 #else
@@ -158,6 +194,9 @@ void at_pwr_dev_deinit(void)
 
 	if (&pwr_dev.cs != NULL)
 		mutex_destroy(&pwr_dev.cs);
+
+	gpio_free(reset_gpio);
+	gpio_free(chip_en_gpio);
 
 	cdev_del(&str_chc_dev);
 	device_destroy(chc_dev_class, chc_dev_no);
@@ -689,26 +728,19 @@ EXPORT_SYMBOL(release_bus);
 void wifi_pm_power(int power)
 {
 	PRINT_D(INIT_DBG, "wifi_pm : %d \n", power);
-	if (gpio_request(GPIO_NUM_CHIP_EN, "CHIP_EN") == 0 && gpio_request(GPIO_NUM_RESET, "RESET") == 0)
-	{
-		gpio_direction_output(GPIO_NUM_CHIP_EN, 0);
-		gpio_direction_output(GPIO_NUM_RESET, 0);
-		if (power)
-		{
-			gpio_set_value_cansleep(GPIO_NUM_CHIP_EN , 1);
-			mdelay(5);
-			gpio_set_value_cansleep(GPIO_NUM_RESET , 1);
-		}
-		else
-		{
-			gpio_set_value_cansleep(GPIO_NUM_RESET , 0);
-			gpio_set_value_cansleep(GPIO_NUM_CHIP_EN , 0);
-		}
-		gpio_free(GPIO_NUM_CHIP_EN);
-		gpio_free(GPIO_NUM_RESET);
-	} else
-	   PRINT_ER("Couldn't get CHIP_EN or RESET GPIOs for wifi chip\n");
+	gpio_direction_output(reset_gpio, 0);
+	gpio_direction_output(chip_en_gpio, 0);
+
+	if (power) {
+		gpio_set_value_cansleep(chip_en_gpio, 1);
+		mdelay(5);
+		gpio_set_value_cansleep(reset_gpio, 1);
+	} else {
+		gpio_set_value_cansleep(chip_en_gpio, 0);
+		gpio_set_value_cansleep(reset_gpio, 0);
+	}
 }
+
 static int linux_wlan_device_power(int on_off)
 {
     PRINT_D(INIT_DBG,"linux_wlan_device_power.. (%d)\n", on_off);
