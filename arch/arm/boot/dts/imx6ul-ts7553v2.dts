@@ -318,6 +318,12 @@
 		compatible = "m41t00";
 		reg = <0x68>;
 	};
+
+	silabs: silabs@2a {
+		compatible = "ts-wdt";
+		reg = <0x2a>;
+	};
+
 };
 
 &i2c3 {
@@ -334,10 +340,9 @@
 	status = "disabled";
 };
 
+// WDT is in the uC, but we need to explicitly disable CPU WDT
 &wdog1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_wdog>;
-	fsl,wdog_b;
+       status = "disabled";
 };
 
 &iomuxc {
@@ -490,12 +495,6 @@
 				MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00	0x1b0b0
 				MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01	0x1b0b0
 				MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1	0x4001b031
-			>;
-		};
-
-		pinctrl_wdog: wdoggrp {
-			fsl,pins = <
-				MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY     0x30b0
 			>;
 		};
 
