@@ -10,9 +10,6 @@
 #include "imx6ul.dtsi"
 
 / {
-	model = "Technologic Systems i.MX6ul TS-4100";
-	compatible = "technologic,ts4100", "fsl,imx6ul";
-
 	chosen {
 		stdout-path = &uart1;
 	};
@@ -138,6 +135,9 @@
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
+		wilc3000,reset-gpios = <&gpio6 21 0>;
+		wilc3000,chip-en-gpios = <&gpio6 20 0>;
+		wilc3000,irq-gpios = <&gpio5 8 0>;
 		status = "okay";
     };
 };
@@ -210,7 +210,6 @@
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 	fsl,uart-has-rtscts;
-	fsl,uart-tx-enable-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* SPARE_1 */
 };
 
 &uart4 {
@@ -298,13 +297,13 @@
 		ngpio = <128>;
 	};
 
-	rtc: m41t00s@68 {
-		compatible = "m41t00";
-		reg = <0x68>;
-	};
 };
 
 &snvs_rtc {
+	status = "ok";
+};
+
+&snvs_poweroff {
 	status = "disabled";
 };
 
@@ -313,6 +312,7 @@
 	pinctrl-0 = <&pinctrl_wdog>;
 	fsl,wdog_b;
 };
+
 
 &iomuxc {
 	pinctrl-names = "default";

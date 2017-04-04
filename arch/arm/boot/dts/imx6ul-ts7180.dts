@@ -28,13 +28,13 @@
 
 		green-led {
 			label = "green-led";
-			gpios = <&gpio6 27 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio6 3 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		red-led {
 			label = "red-led";
-			gpios = <&gpio6 28 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio6 4 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
 	};
@@ -157,6 +157,9 @@
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
+		wilc3000,reset-gpios = <&gpio6 1 0>;
+		wilc3000,chip-en-gpios = <&gpio6 0 0>;
+		wilc3000,irq-gpios = <&gpio5 8 0>;
 		status = "okay";
     };
 };
@@ -354,8 +357,6 @@
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
 				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18    0x1b020 /* SPARE_1 */
-
-
 				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01     0x17059 /* GPIO_1_ADC */
 				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09     0x17059 /* GPIO_9_ADC */
 				MX6UL_PAD_NAND_DQS__GPIO4_IO16       0x1b020 /* SPARE_3 */
@@ -366,10 +367,7 @@
 				MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04   0x1b020 /* ADC_1 */
 				MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05   0x1b020 /* ADC_2 */
 				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06   0x1b020 /* ADC_3 */
-				MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07   0x1b020 /* ADC_4 */
-				
-				
-				
+				MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07   0x1b020 /* ADC_4 */				
 			>;
 		};
 
