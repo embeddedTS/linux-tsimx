@@ -62,6 +62,40 @@
 		};
 	};
 
+		gpio-keys {
+		compatible = "gpio-keys";
+
+		   left {
+			   label = "Left";
+			   gpios = <&gpio4 21 GPIO_ACTIVE_LOW>;
+			   linux,code = <KEY_LEFT>;
+			   debounce-interval = <20>;
+			   gpio-key,wakeup;
+		   };
+
+		   up {
+			   label = "up";
+			   gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
+			   linux,code = <KEY_UP>;
+			   debounce-interval = <20>;
+			   gpio-key,wakeup;
+		   };
+		   down {
+			   label = "Down";
+			   gpios = <&gpio4 23 GPIO_ACTIVE_LOW>;
+			   linux,code = <KEY_DOWN>;
+			   debounce-interval = <20>;
+			   gpio-key,wakeup;
+		   };
+		   right {
+			   label = "Right";
+			   gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
+			   linux,code = <KEY_RIGHT>;
+			   debounce-interval = <20>;
+			   gpio-key,wakeup;
+		   };
+	   };
+
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -345,6 +379,9 @@
 &wdog1 {
        status = "disabled";
 };
+
+
+
 
 &iomuxc {
 	pinctrl-names = "default";
