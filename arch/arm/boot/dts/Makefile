@@ -331,7 +331,29 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-tx6q-1110.dtb \
 	imx6q-udoo.dtb \
 	imx6q-wandboard.dtb \
-	imx6q-wandboard-revb1.dtb
+	imx6q-wandboard-revb1.dtb \
+	imx6dl-ts4900-15.dtb \
+	imx6dl-ts4900-14.dtb \
+	imx6dl-ts4900-2.dtb\
+	imx6dl-ts4900.dtb \
+	imx6dl-ts7970.dtb \
+	imx6dl-ts7990-lxd-revb.dtb \
+	imx6dl-ts7990-lxd.dtb \
+	imx6dl-ts7990-microtips-revb.dtb \
+	imx6dl-ts7990-microtips.dtb \
+	imx6dl-ts7990-okaya-revb.dtb \
+	imx6dl-ts7990-okaya.dtb \
+	imx6q-ts4900-15.dtb \
+	imx6q-ts4900-14.dtb \
+	imx6q-ts4900-2.dtb \
+	imx6q-ts4900.dtb \
+	imx6q-ts7970.dtb \
+	imx6q-ts7990-lxd-revb.dtb \
+	imx6q-ts7990-lxd.dtb \
+	imx6q-ts7990-microtips-revb.dtb \
+	imx6q-ts7990-microtips.dtb \
+	imx6q-ts7990-okaya-revb.dtb \
+	imx6q-ts7990-okaya.dtb
 dtb-$(CONFIG_SOC_IMX6SL) += \
 	imx6sl-evk.dtb \
 	imx6sl-evk-ldo.dtb \
