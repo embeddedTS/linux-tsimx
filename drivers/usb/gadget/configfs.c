@@ -23,7 +23,9 @@ void acc_disconnect(void);
 static struct class *android_class;
 static struct device *android_device;
 static int index;
+#ifdef CONFIG_HAS_WAKELOCK
 static struct wake_lock wakelock;
+#endif
 
 struct device *create_function_device(char *name)
 {
@@ -1569,7 +1571,9 @@ static int android_setup(struct usb_gadget *gadget,
 
 	spin_lock_irqsave(&cdev->lock, flags);
 	if (!gi->connected) {
+#ifdef CONFIG_HAS_WAKELOCK
 		wake_lock(&wakelock);
+#endif
 		gi->connected = 1;
 		schedule_work(&gi->work);
 	}
@@ -1616,7 +1620,9 @@ static void android_disconnect(struct usb_gadget *gadget)
 	gi->connected = 0;
 	schedule_work(&gi->work);
 	composite_disconnect(gadget);
+#ifdef CONFIG_HAS_WAKELOCK
 	wake_unlock(&wakelock);
+#endif
 }
 #endif
 
@@ -1826,7 +1832,9 @@ static int __init gadget_cfs_init(void)
 
 	config_group_init(&gadget_subsys.su_group);
 
+#ifdef CONFIG_HAS_WAKELOCK
 	wake_lock_init(&wakelock, WAKE_LOCK_SUSPEND, "gadget");
+#endif
 	ret = configfs_register_subsystem(&gadget_subsys);
 
 #ifdef CONFIG_USB_CONFIGFS_UEVENT
@@ -1841,7 +1849,9 @@ module_init(gadget_cfs_init);
 
 static void __exit gadget_cfs_exit(void)
 {
+#ifdef CONFIG_HAS_WAKELOCK
 	wake_lock_destroy(&wakelock);
+#endif
 	configfs_unregister_subsystem(&gadget_subsys);
 #ifdef CONFIG_USB_CONFIGFS_UEVENT
 	if (!IS_ERR(android_class))
