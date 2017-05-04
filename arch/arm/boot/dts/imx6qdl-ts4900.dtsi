@@ -197,13 +197,13 @@
 		reg = <0x6f>;
 	};
 
-	gpio8: tsgpio@28 {
-		compatible = "technologic,tsgpio";
+	gpio8: gpio@28 {
+		compatible = "technologic,ts4900-gpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
 		base = <224>;
-		ngpio = /bits/ 16 <32>;
+		ngpio = <32>;
 	};
 };
 
