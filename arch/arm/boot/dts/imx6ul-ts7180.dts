@@ -26,15 +26,27 @@
 		pinctrl-names = "default";
 		compatible = "gpio-leds";
 
-		green-led {
-			label = "green-led";
-			gpios = <&gpio6 3 GPIO_ACTIVE_LOW>;
-			default-state = "on";
+		yellow-led {
+			label = "yellow-led";
+			gpios = <&gpio4 23 GPIO_ACTIVE_LOW>;
+			default-state = "off";
 		};
 
 		red-led {
 			label = "red-led";
-			gpios = <&gpio6 4 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		green-led {
+			label = "green-led";
+			gpios = <&gpio4 25 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+		
+		blue-led {
+			label = "blue-led";
+			gpios = <&gpio4 26 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
 	};
@@ -79,6 +91,7 @@
 			states = <1300000 0x1 1400000 0x0>;
 		};
 
+		/*
 		reg_usb_otg1_vbus: regulator@2 {
 			compatible = "regulator-fixed";
 			reg = <2>;
@@ -90,13 +103,14 @@
 			gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
-
+   */
+   
 		reg_sd1_vmmc: sd1_vmmc {
 			compatible = "regulator-fixed";
 			regulator-name = "SD1_SPWR";
 			regulator-min-microvolt = <3000000>;
 			regulator-max-microvolt = <3000000>;
-			gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
+			gpio = <&gpio4 26 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
 		
@@ -261,7 +275,7 @@
 };
 
 &usbotg1 {
-	vbus-supply = <&reg_usb_otg1_vbus>;
+	//vbus-supply = <&reg_usb_otg1_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb_otg1_id>;
 	srp-disable;
@@ -356,18 +370,16 @@
 	imx6ul-ts7180 {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18    0x1b020 /* SPARE_1 */
-				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01     0x17059 /* GPIO_1_ADC */
-				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09     0x17059 /* GPIO_9_ADC */
+				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18    0x1b020 /* SPARE_1 */				
 				MX6UL_PAD_NAND_DQS__GPIO4_IO16       0x1b020 /* SPARE_3 */
 				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00   0x1b020 /* POWER_FAIL */
 				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01   0x1b020 /* FPGA_IRQ */
 				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02   0x1b020 /* EN_FPGA_PWR */
 				MX6UL_PAD_NAND_WP_B__GPIO4_IO11      0x1b020 /* FPGA_RESET# */
-				MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04   0x1b020 /* ADC_1 */
-				MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05   0x1b020 /* ADC_2 */
-				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06   0x1b020 /* ADC_3 */
-				MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07   0x1b020 /* ADC_4 */				
+	         MX6UL_PAD_CSI_DATA02__GPIO4_IO23     0x1b020 /* EN_YEL_LED# */
+	         MX6UL_PAD_CSI_DATA03__GPIO4_IO24     0x1b020 /* EN_RED_LED# */
+	         MX6UL_PAD_CSI_DATA04__GPIO4_IO25     0x1b020 /* EN_GREEN_LED# */
+	         MX6UL_PAD_CSI_DATA05__GPIO4_IO26     0x1b020 /* EN_BLUE_LED */	         
 			>;
 		};
 
@@ -377,11 +389,13 @@
 			>;
 		};
 
+		/*
 		pinctrl_usb_otg1: usbotg1grp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x10b0
 			>;
 		};
+   */
 
 		pinctrl_flexcan1: flexcan1grp{
 			fsl,pins = <
@@ -531,17 +545,19 @@
 				MX6UL_PAD_SD1_DATA1__USDHC1_DATA1    0x17059
 				MX6UL_PAD_SD1_DATA2__USDHC1_DATA2    0x17059
 				MX6UL_PAD_SD1_DATA3__USDHC1_DATA3    0x17059
-				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09   0x17059 /* EN_SD_POWER */
-				
-			// disable for testing adc1	
-			/*	MX6UL_PAD_GPIO1_IO05__USDHC1_VSELECT 0x17059 */ /* SD1 VSELECT */
+								
+				MX6UL_PAD_CSI_DATA07__USDHC1_VSELECT     0x17059  /* SD1 VSELECT */
 			>;
 		};
 
 		
 		pinctrl_adc: adcgrp {
 		   fsl,pins = <		      
-				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05  0x00b0    /* ADC_1 */
+				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04       0x1b020   /* ADC_1 */
+				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05       0x1b020   /* ADC_2 */
+				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08       0x1b020   /* ADC_3 */
+				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09       0x1b020   /* ADC_4 */
+				
 		   >;
 		};   
 		
