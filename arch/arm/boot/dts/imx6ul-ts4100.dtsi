@@ -333,11 +333,11 @@
 };
 
 &snvs_rtc {
-	status = "ok";
+	status = "okay";
 };
 
 &snvs_poweroff {
-	status = "disabled";
+	status = "okay";
 };
 
 &wdog1 {
