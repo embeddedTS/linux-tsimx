@@ -225,7 +225,8 @@ struct imx_port {
 	unsigned int		dte_mode:1;
 	unsigned int		irda_inv_rx:1;
 	unsigned int		irda_inv_tx:1;
-   struct gpio_desc *txenable_gpio;
+	unsigned int		rs485_enable:1;
+	struct gpio_desc 	*txenable_gpio;
 	unsigned short		trcv_delay; /* transceiver delay */
 	struct clk		*clk_ipg;
 	struct clk		*clk_per;
@@ -1989,6 +1990,10 @@ static int serial_imx_probe_dt(struct imx_port *sport,
             sport->txenable_gpio = NULL;
       }
    }
+	if (of_property_read_bool(np, "linux,rs485-enabled-at-boot-time"))
+		sport->rs485_enable = 1;
+	else
+		sport->rs485_enable = 0;
 
 	if (of_get_property(np, "fsl,dte-mode", NULL))
 		sport->dte_mode = 1;
@@ -2058,6 +2063,8 @@ static int serial_imx_probe(struct platform_device *pdev)
 	sport->port.rs485_config = imx_rs485_config;
 	sport->port.rs485.flags =
 		SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX;
+	if(sport->rs485_enable)
+		sport->port.rs485.flags |= SER_RS485_ENABLED;
 
 	sport->port.flags = UPF_BOOT_AUTOCONF;
 	init_timer(&sport->timer);

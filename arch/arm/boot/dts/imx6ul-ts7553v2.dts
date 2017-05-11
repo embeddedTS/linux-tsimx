@@ -261,6 +261,7 @@
 
 	fsl,uart-has-rtscts;
 	fsl,uart-tx-enable-gpios = <&gpio1 22 GPIO_ACTIVE_LOW>;
+	linux,rs485-enabled-at-boot-time;
 };
 
 &uart3 {
