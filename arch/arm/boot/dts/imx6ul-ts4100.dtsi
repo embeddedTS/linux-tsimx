@@ -321,6 +321,12 @@
 	scl-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
 	sda-gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
 
+	/* FPGA emulates register access like an eeprom */
+	at24@29 {
+		compatible = "at,24c512";
+		reg = <0x29>;
+	};
+
 	gpio6: gpio@28 {
 		compatible = "technologic,ts7970-gpio";
 		reg = <0x28>;
@@ -329,7 +335,6 @@
 		base = <160>;
 		ngpio = <128>;
 	};
-
 };
 
 &snvs_rtc {
@@ -345,7 +350,6 @@
 	pinctrl-0 = <&pinctrl_wdog>;
 	fsl,wdog_b;
 };
-
 
 &iomuxc {
 	pinctrl-names = "default";
