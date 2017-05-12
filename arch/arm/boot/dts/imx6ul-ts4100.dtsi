@@ -332,7 +332,7 @@
 		#gpio-cells = <2>;
 		gpio-controller;
 		base = <160>;
-		ngpio = <128>;
+		ngpios = <128>;
 	};
 };
 
