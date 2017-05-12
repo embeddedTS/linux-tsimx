@@ -52,7 +52,6 @@
 	};
 
 	leds {
-		pinctrl-names = "default";
 		compatible = "gpio-leds";
 
 		green-led {
