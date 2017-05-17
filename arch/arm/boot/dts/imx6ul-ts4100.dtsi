@@ -327,7 +327,7 @@
 	};
 
 	gpio6: gpio@28 {
-		compatible = "technologic,ts7970-gpio";
+		compatible = "technologic,ts4900-gpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
