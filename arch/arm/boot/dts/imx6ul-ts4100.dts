@@ -6,7 +6,6 @@
  * published by the Free Software Foundation.
  */
 
-
 /dts-v1/;
 
 #include "imx6ul-ts4100.dtsi"
@@ -16,6 +15,15 @@
 	compatible = "fsl,imx6ul-ts4100", "fsl,imx6ul";
 };
 
+&ecspi3 {
+	fsl,spi-num-chipselects = <2>;
+	cs-gpios = <&gpio4 12 0>, <&gpio4 10 0>;
+	spioffbd: spi@1 {
+		compatible = "spidev";
+		reg = <1>;
+		spi-max-frequency = <1000000>;
+	};
+};
 
 &iomuxc {
 	pinctrl-names = "default";
