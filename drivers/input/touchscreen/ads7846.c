@@ -142,6 +142,7 @@ struct ads7846 {
 	void			(*filter_cleanup)(void *data);
 	int			(*get_pendown_state)(void);
 	int			gpio_pendown;
+	int			calib[7];
 
 	void			(*wait_for_sync)(void);
 };
@@ -842,6 +843,21 @@ static void ads7846_report_state(struct ads7846 *ts)
 			dev_vdbg(&ts->spi->dev, "DOWN\n");
 		}
 
+			/* calib[7]  from tslib:
+			xscale
+			ymix
+			xoffset
+			ymix
+			yscale
+			yoffset
+			delta */
+ 		if(ts->calib[6] != 0) {
+ 			x = (ts->calib[0] * x + ts->calib[1] * y + ts->calib[2]) / ts->calib[6];
+ 			if(x < 0) x = 0;
+ 			y = (ts->calib[3] * x + ts->calib[4] * y + ts->calib[5]) / ts->calib[6];
+ 			if(y < 0) y = 0;
+ 		}
+
 		input_report_abs(input, ABS_X, x);
 		input_report_abs(input, ABS_Y, y);
 		input_report_abs(input, ABS_PRESSURE, ts->pressure_max - Rt);
@@ -1241,6 +1257,8 @@ static const struct ads7846_platform_data *ads7846_probe_dt(struct device *dev)
 	of_property_read_u16(node, "ti,debounce-tol", &pdata->debounce_tol);
 	of_property_read_u16(node, "ti,debounce-rep", &pdata->debounce_rep);
 
+	of_property_read_u32_array(node, "ti,calib", pdata->calib, 7);
+
 	ret = of_property_read_u32(node, "ti,pendown-gpio-debounce",
 			     &pdata->gpio_pendown_debounce);
 	rotation_180 = of_property_read_bool(node, "ti,yx_swap_en");
@@ -1270,6 +1288,7 @@ static int ads7846_probe(struct spi_device *spi)
 	struct input_dev *input_dev;
 	unsigned long irq_flags;
 	int err;
+	int i;
 
 	if (!spi->irq) {
 		dev_dbg(&spi->dev, "no IRQ?\n");
@@ -1327,6 +1346,8 @@ static int ads7846_probe(struct spi_device *spi)
 
 	ts->vref_mv = pdata->vref_mv;
 	ts->swap_xy = pdata->swap_xy;
+	for (i = 0; i < 7; i++)
+		ts->calib[i] = (int)pdata->calib[i];
 
 	if (pdata->filter != NULL) {
 		if (pdata->filter_init != NULL) {
