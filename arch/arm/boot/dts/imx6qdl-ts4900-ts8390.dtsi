@@ -61,7 +61,7 @@
 		#size-cells = <0>;
 	};
 
-	backlight_lcd {
+	backlight0 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm3 0 5000000>;
 		brightness-levels = <0 128 140 160 180 200 220 240 255>;
