@@ -36,7 +36,7 @@ struct ts4900_gpio_priv {
 	unsigned int input_bit;
 };
 
-static inline struct ts4900_gpio_priv *to_gpio_ts(struct gpio_chip *chip)
+static inline struct ts4900_gpio_priv *to_gpio_ts4900(struct gpio_chip *chip)
 {
 	return container_of(chip, struct ts4900_gpio_priv, gpio_chip);
 }
@@ -44,7 +44,7 @@ static inline struct ts4900_gpio_priv *to_gpio_ts(struct gpio_chip *chip)
 static int ts4900_gpio_get_direction(struct gpio_chip *chip,
 				     unsigned int offset)
 {
-	struct ts4900_gpio_priv *priv = to_gpio_ts(chip);
+	struct ts4900_gpio_priv *priv = to_gpio_ts4900(chip);
 	unsigned int reg;
 
 	regmap_read(priv->regmap, offset, &reg);
@@ -55,7 +55,7 @@ static int ts4900_gpio_get_direction(struct gpio_chip *chip,
 static int ts4900_gpio_direction_input(struct gpio_chip *chip,
 				       unsigned int offset)
 {
-	struct ts4900_gpio_priv *priv = to_gpio_ts(chip);
+	struct ts4900_gpio_priv *priv = to_gpio_ts4900(chip);
 
 	/*
 	 * This will clear the output enable bit, the other bits are
@@ -67,7 +67,7 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
 static int ts4900_gpio_direction_output(struct gpio_chip *chip,
 					unsigned int offset, int value)
 {
-	struct ts4900_gpio_priv *priv = to_gpio_ts(chip);
+	struct ts4900_gpio_priv *priv = to_gpio_ts4900(chip);
 	int ret;
 
 	if (value)
@@ -81,7 +81,7 @@ static int ts4900_gpio_direction_output(struct gpio_chip *chip,
 
 static int ts4900_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
-	struct ts4900_gpio_priv *priv = to_gpio_ts(chip);
+	struct ts4900_gpio_priv *priv = to_gpio_ts4900(chip);
 	unsigned int reg;
 
 	regmap_read(priv->regmap, offset, &reg);
@@ -92,7 +92,7 @@ static int ts4900_gpio_get(struct gpio_chip *chip, unsigned int offset)
 static void ts4900_gpio_set(struct gpio_chip *chip, unsigned int offset,
 			    int value)
 {
-	struct ts4900_gpio_priv *priv = to_gpio_ts(chip);
+	struct ts4900_gpio_priv *priv = to_gpio_ts4900(chip);
 
 	if (value)
 		regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OUT,
@@ -136,7 +136,7 @@ static int ts4900_gpio_probe(struct i2c_client *client,
 	const struct of_device_id *match;
 	struct ts4900_gpio_priv *priv;
 	u32 ngpio;
-	u32 base;
+	int base;
 	int ret;
 
 	match = of_match_device(ts4900_gpio_of_match_table, &client->dev);
@@ -147,19 +147,19 @@ static int ts4900_gpio_probe(struct i2c_client *client,
 		ngpio = DEFAULT_PIN_NUMBER;
 
 	if (of_property_read_u32(client->dev.of_node, "base", &base))
-		return -EINVAL;
+		base = -1;
 
-	priv = devm_kzalloc(&client->dev,
-		sizeof(struct ts4900_gpio_priv), GFP_KERNEL);
+	priv = devm_kzalloc(&client->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
-	i2c_set_clientdata(client, priv);
 	priv->gpio_chip = template_chip;
 	priv->gpio_chip.label = "ts4900-gpio";
-	priv->gpio_chip.base = base;
 	priv->gpio_chip.ngpio = ngpio;
+	priv->gpio_chip.base = base;
 	priv->input_bit = (uintptr_t)match->data;
+	client->dev.platform_data = priv;
+	priv->gpio_chip.dev = &client->dev;
 
 	priv->regmap = devm_regmap_init_i2c(client, &ts4900_regmap_config);
 	if (IS_ERR(priv->regmap)) {
