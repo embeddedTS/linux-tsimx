@@ -104,7 +104,7 @@
 			"Mic Jack", "Mic Bias",
 			"Headphone Jack", "HP_OUT";
 		compatible = "fsl,imx-audio-sgtl5000";
-		model = "On-board Codec";
+		model = "sgtl5000-audio";
 		mux-ext-port = <3>;
 		mux-int-port = <1>;
 		ssi-controller = <&ssi1>;
