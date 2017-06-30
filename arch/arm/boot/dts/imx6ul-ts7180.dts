@@ -346,6 +346,10 @@
 	};
 };
 
+&snvs_poweroff {
+	status = "okay";
+};
+
 &snvs_rtc {
 	status = "disabled";
 };
