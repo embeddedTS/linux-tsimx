@@ -92,7 +92,7 @@
 		};
 
 		/*
-		reg_usb_otg1_vbus: regulator@2 {
+			reg_usb_otg1_vbus: regulator@2 {
 			compatible = "regulator-fixed";
 			reg = <2>;
 			pinctrl-names = "default";
@@ -104,15 +104,16 @@
 			enable-active-high;
 		};
    */
-   
+
 		reg_sd1_vmmc: sd1_vmmc {
 			compatible = "regulator-fixed";
 			regulator-name = "SD1_SPWR";
 			regulator-min-microvolt = <3000000>;
 			regulator-max-microvolt = <3000000>;
-			gpio = <&gpio4 26 GPIO_ACTIVE_HIGH>;
+			gpio = <&gpio6 14 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
+		
 		
 		reg_adc_vref: adc_vref {
 			compatible = "regulator-fixed";
@@ -141,8 +142,8 @@
 };
 
 &ecspi3 {
-	fsl,spi-num-chipselects = <2>;
-	cs-gpios = <&gpio4 12 0>, <&gpio4 10 0>;
+	fsl,spi-num-chipselects = <3>;
+	cs-gpios = <&gpio4 12 0>, <&gpio4 10 0>, <&gpio4 27 0>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi3>;
 	status = "okay";
@@ -156,6 +157,12 @@
 	spioffbd: spi@1 {
 		compatible = "spidev";
 		reg = <1>;
+		spi-max-frequency = <1000000>;
+	};
+
+	spifram: spi@2 {
+		compatible = "spidev";
+		reg = <2>;
 		spi-max-frequency = <1000000>;
 	};
 };
@@ -346,6 +353,10 @@
 	};
 };
 
+&snvs_poweroff {
+	status = "okay";
+};
+
 &snvs_rtc {
 	status = "disabled";
 };
@@ -395,7 +406,7 @@
 				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x10b0
 			>;
 		};
-   */
+     */
 
 		pinctrl_flexcan1: flexcan1grp{
 			fsl,pins = <
@@ -600,6 +611,7 @@
 				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x10b0
 				MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x10b0
 				MX6UL_PAD_NAND_ALE__GPIO4_IO10      0x10b0 // SPI_3_OFF_BD_CS#
+				MX6UL_PAD_CSI_DATA06__GPIO4_IO27    0x10b0 // FRAM_SPI_CS#
 			>;
 		};
 
