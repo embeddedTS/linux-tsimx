@@ -166,8 +166,8 @@
 };
 
 &ecspi3 {
-	fsl,spi-num-chipselects = <2>;
-	cs-gpios = <&gpio4 12 0>, <&gpio2 15 0>;
+	fsl,spi-num-chipselects = <3>;
+	cs-gpios = <&gpio4 12 0>, <&gpio2 15 0>, <&gpio5 6 0>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi3>;
 	status = "okay";
@@ -182,6 +182,15 @@
 		compatible = "spidev";
 		reg = <1>;
 		spi-max-frequency = <1000000>;
+	};
+
+	spifram: spi@2 {
+		compatible = "atmel,at25", "cypress,fm25l16b";
+		reg = <2>;
+		spi-max-frequency = <20000000>;
+		size = <0x800>;
+		address-width = <16>;
+		pagesize = <64>;
 	};
 };
 
@@ -561,7 +570,7 @@
 		pinctrl_i2c3_gpio: i2c3grpgpio {
 			fsl,pins = <
 				MX6UL_PAD_LCD_DATA01__GPIO3_IO06        0x4001a8b0
-				MX6UL_PAD_LCD_DATA00__GPIO3_IO05        0x4001a8b0
+				MX6UL_PAD_LCD_DATA00__GPIO3_IO05	0x4001a8b0
 			>;
 		};
 
@@ -613,15 +622,26 @@
 
 		pinctrl_ecspi3: ecspi3grp {
 			fsl,pins = <
-            MX6UL_PAD_CSI_DATA04__GPIO4_IO25 	0x1b020 /* EN_LCD_BK_LT (gpio121) */
-            MX6UL_PAD_NAND_WP_B__GPIO4_IO11 	0x1b020 /* LCD_RESET#   (gpio107) */
-            MX6UL_PAD_NAND_DQS__GPIO4_IO16  	0x1b020 /* LCD_CMD#     (gpio112) */
+				/* EN_LCD_BK_LT (gpio121) */
+				MX6UL_PAD_CSI_DATA04__GPIO4_IO25   0x1b020 
+				/* LCD_RESET#   (gpio107) */
+				MX6UL_PAD_NAND_WP_B__GPIO4_IO11    0x1b020 
+				/* LCD_CMD#     (gpio112) */
+				MX6UL_PAD_NAND_DQS__GPIO4_IO16     0x1b020 
 
-            MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x1b020 /* SPI_3_LCD_CS# CS0 */
-            MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK   0x1b020 /* SPI_3_CLK         */
-            MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x1b020 /* SPI_3_MOSI        */
-            MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x1b820 /* SPI_3_MISO        */
-            MX6UL_PAD_ENET2_RX_ER__GPIO2_IO15   0x1b020 /* HD1_SPI_CS# CS1   */
+				/* SPI_3_CLK */
+				MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK  0x1b020 
+				/* SPI_3_MOSI */
+				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI  0x1b020 
+				/* SPI_3_MISO */
+				MX6UL_PAD_NAND_CLE__ECSPI3_MISO	   0x1b820 
+				/* HD1_SPI_CS# CS1 */
+				MX6UL_PAD_ENET2_RX_ER__GPIO2_IO15  0x1b020 
+				/* SPI_3_LCD_CS# CS0 */
+				MX6UL_PAD_NAND_READY_B__GPIO4_IO12 0x1b020 
+				/* FRAM_SPI_CS# CS2 */
+				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06 0x1b020
+				
 			>;
 		};
 
