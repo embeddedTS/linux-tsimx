@@ -5,13 +5,13 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
-
+ 
 /dts-v1/;
 #include <dt-bindings/input/input.h>
 #include "imx6ul.dtsi"
 
 / {
-	model = "Technologic Systems i.MX6ul TS-7180";
+	model = "Technologic Systems i.MX6ul TS-Andium";
 	compatible = "technologic,ts7180", "fsl,imx6ul";
 
 	chosen {
@@ -19,7 +19,7 @@
 	};
 
 	memory {
-		reg = <0x80000000 0x20000000>;
+		reg = <0x80000000 0x40000000>;
 	};
 
 	leds {
@@ -91,8 +91,8 @@
 			states = <1300000 0x1 1400000 0x0>;
 		};
 
-		/*
-			reg_usb_otg1_vbus: regulator@2 {
+		
+		reg_usb_otg1_vbus: regulator@2 {
 			compatible = "regulator-fixed";
 			reg = <2>;
 			pinctrl-names = "default";
@@ -103,8 +103,8 @@
 			gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
-   */
-
+   
+   
 		reg_sd1_vmmc: sd1_vmmc {
 			compatible = "regulator-fixed";
 			regulator-name = "SD1_SPWR";
@@ -143,7 +143,7 @@
 
 &ecspi3 {
 	fsl,spi-num-chipselects = <3>;
-	cs-gpios = <&gpio4 12 0>, <&gpio4 10 0>, <&gpio4 27 0>;
+	cs-gpios = <&gpio4 12 0>, <&gpio3 0 0>, <&gpio4 27 0>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi3>;
 	status = "okay";
@@ -159,12 +159,13 @@
 		reg = <1>;
 		spi-max-frequency = <1000000>;
 	};
-
+	
 	spifram: spi@2 {
 		compatible = "spidev";
 		reg = <2>;
 		spi-max-frequency = <1000000>;
 	};
+	
 };
 
 &ecspi4 {
@@ -282,7 +283,7 @@
 };
 
 &usbotg1 {
-	//vbus-supply = <&reg_usb_otg1_vbus>;
+	vbus-supply = <&reg_usb_otg1_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb_otg1_id>;
 	srp-disable;
@@ -332,10 +333,15 @@
 		compatible = "m41t00";
 		reg = <0x68>;
 	};
+	
+	silabs: silabs@2a {
+		compatible = "ts-wdt";
+		reg = <0x2a>;
+	};
 };
 
 &i2c3 {
-	clock-frequency = <400000>;
+	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	pinctrl-1 = <&pinctrl_i2c3_gpio>;
@@ -358,7 +364,7 @@
 };
 
 &snvs_rtc {
-	status = "disabled";
+	status = "enabled";
 };
 
 &wdog1 {
@@ -367,13 +373,6 @@
 	fsl,wdog_b;
 };
 
-&adc1 {
-   pinctrl-names = "default";
-   pinctrl-0 = <&pinctrl_adc>;
-   vref-supply = <&reg_adc_vref>;
-   num-channels = <10>;
-	status = "okay";
-};
 
 &iomuxc {
 	pinctrl-names = "default";
@@ -392,24 +391,22 @@
 	         MX6UL_PAD_CSI_DATA04__GPIO4_IO25     0x1b020 /* EN_GREEN_LED# */
 	         MX6UL_PAD_CSI_DATA05__GPIO4_IO26     0x1b020 /* EN_BLUE_LED */	  
 	         MX6UL_PAD_LCD_DATA06__GPIO3_IO11     0x1b020 /* NO_CHRG_JMP# */
-
 			>;
 		};
 
 		pinctrl_usb_otg1_id: usbotg1idgrp {
 			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID	0x17059
+				MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID	0x17059 /* BOOT_MODE_0 */
 			>;
 		};
 
-		/*
+		
 		pinctrl_usb_otg1: usbotg1grp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x10b0
 			>;
 		};
-     */
-
+   
 		pinctrl_flexcan1: flexcan1grp{
 			fsl,pins = <
 				MX6UL_PAD_LCD_DATA08__FLEXCAN1_TX	0x1b020
@@ -472,8 +469,8 @@
 
 		pinctrl_uart8: uart8grp {
 			fsl,pins = <
-			   MX6UL_PAD_LCD_DATA21__UART8_DCE_RX	0x1b0b1  /* RXD_GPS */
-				MX6UL_PAD_LCD_DATA20__UART8_DCE_TX	0x1b0b1	/* TXD_GPS */
+			   MX6UL_PAD_LCD_DATA21__UART8_DCE_RX	0x1b0b1  /* RXD from modem */
+				MX6UL_PAD_LCD_DATA20__UART8_DCE_TX	0x1b0b1	/* TXD to modem */
 			>;
 		};
 		
@@ -538,15 +535,15 @@
 
 		pinctrl_i2c3: i2c3grp {
 			fsl,pins = <
-				MX6UL_PAD_LCD_DATA01__I2C3_SCL 0x4001b8b0
-				MX6UL_PAD_LCD_DATA00__I2C3_SDA 0x4001b8b0
+				MX6UL_PAD_LCD_DATA01__I2C3_SCL 0x4001a8b0
+				MX6UL_PAD_LCD_DATA00__I2C3_SDA 0x4001a8b0
 			>;
 		};
 
 		pinctrl_i2c3_gpio: i2c3grpgpio {
 			fsl,pins = <
-				MX6UL_PAD_LCD_DATA01__GPIO3_IO06 0x4001b8b0
-				MX6UL_PAD_LCD_DATA00__GPIO3_IO05 0x4001b8b0
+				MX6UL_PAD_LCD_DATA01__GPIO3_IO06 0x4001a8b0
+				MX6UL_PAD_LCD_DATA00__GPIO3_IO05 0x4001a8b0
 			>;
 		};
 
@@ -564,15 +561,6 @@
 		};
 
 		
-		pinctrl_adc: adcgrp {
-		   fsl,pins = <		      
-				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04       0x1b020   /* ADC_1 */
-				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05       0x1b020   /* ADC_2 */
-				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08       0x1b020   /* ADC_3 */
-				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09       0x1b020   /* ADC_4 */
-				
-		   >;
-		};   
 		
 		pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
 			fsl,pins = <
@@ -607,12 +595,12 @@
 		};
 
 		pinctrl_ecspi3: ecspi3grp {
-			fsl,pins = <
-				MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x10b0 // SPI_3_FPGA_CS#
+			fsl,pins = <				
 				MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK   0x10b0
 				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x10b0
 				MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x10b0
-				MX6UL_PAD_NAND_ALE__GPIO4_IO10      0x10b0 // SPI_3_OFF_BD_CS#
+				MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x10b0 // SPI_3_FPGA_CS#
+				MX6UL_PAD_LCD_CLK__GPIO3_IO00       0x10b0 // HD1_SPI_CS
 				MX6UL_PAD_CSI_DATA06__GPIO4_IO27    0x10b0 // FRAM_SPI_CS#
 			>;
 		};
@@ -633,4 +621,4 @@
 			>;
 		};
 	};
-};
+}; 
