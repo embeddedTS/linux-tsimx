@@ -484,6 +484,7 @@
 				MX6QDL_PAD_EIM_D28__I2C1_SDA		0x4001b8b1
 				MX6QDL_PAD_EIM_CS0__GPIO2_IO23		0x17059 /* ACCEL_INT */
 				MX6QDL_PAD_EIM_DA15__GPIO3_IO15		0x17059 /* ACCEL_2_INT */
+				MX6QDL_PAD_GPIO_9__GPIO1_IO09		0x88 /* TOUCH_RESET */
 			>;
 		};
 
@@ -584,6 +585,7 @@
 				MX6QDL_PAD_SD3_DAT1__SD3_DATA1		0x17059
 				MX6QDL_PAD_SD3_DAT2__SD3_DATA2		0x17059
 				MX6QDL_PAD_SD3_DAT3__SD3_DATA3		0x17059
+				MX6QDL_PAD_EIM_D23__GPIO3_IO23		0x88	/* EN_EMMC_3.3V# */
 			>;
 		};
 
@@ -591,6 +593,12 @@
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_2__GPIO1_IO02		0x1b088 /* RED_LED# */
 				MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21	0x1b088 /* GREEN_LED# */
+			>;
+		};
+
+		pinctrl_pcie: pciegrp {
+			fsl,pins = <
+				MX6QDL_PAD_NANDF_D4__GPIO2_IO04		0x1b088 /* PCIE_RESET# */
 			>;
 		};
 
@@ -633,7 +641,10 @@
 };
 
 &pcie {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pcie>;
 	status = "okay";
+	reset-gpio = <&gpio2 4 GPIO_ACTIVE_LOW>;
 };
 
 &pwm3 {
@@ -699,7 +710,7 @@
 	pinctrl-0 = <&pinctrl_usdhc1>;
 	vmmc-supply = <&wl12xx_vmmc>;
 	bus-width = <4>;
-	status = "okay";
+	status = "disabled";
 	non-removable;
 
 	#address-cells = <1>;
