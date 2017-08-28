@@ -178,6 +178,14 @@
 		};
 	};
 
+	kim {
+		compatible = "kim";
+		nshutdown_gpio = <&gpio8 13 0>;
+		dev_name = "/dev/ttymxc1";
+		flow_cntrl = <1>;
+		baud_rate = <3000000>;
+	};
+
 	sound {
 		audio-codec = <&sgtl5000>;
 		audio-routing =

@@ -113,6 +113,14 @@
 			regulator-boot-on;
 		};
 	};
+
+	kim {
+		compatible = "kim";
+		nshutdown_gpio = <&gpio8 13 0>;
+		dev_name = "/dev/ttymxc1";
+		flow_cntrl = <1>;
+		baud_rate = <3000000>;
+	};
 };
 
 &can1 {
