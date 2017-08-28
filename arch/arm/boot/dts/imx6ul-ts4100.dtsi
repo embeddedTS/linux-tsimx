@@ -173,8 +173,6 @@
 	pinctrl-0 = <&pinctrl_enet1>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy0>;
-	phy-reset-gpios = <&gpio6 24 GPIO_ACTIVE_HIGH>;
-	phy-reset-duration = <10>;
 	status = "okay";
 };
 
@@ -183,8 +181,6 @@
 	pinctrl-0 = <&pinctrl_enet2>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy1>;
-	phy-reset-gpios = <&gpio6 24 GPIO_ACTIVE_HIGH>;
-	phy-reset-duration = <10>;
 	status = "okay";
 
 	mdio {
