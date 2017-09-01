@@ -119,11 +119,15 @@
 		spi-max-frequency = <1000000>;
 	};
 
-	spioffbd: spi@1 {
-		compatible = "spidev";
-		reg = <1>;
-		spi-max-frequency = <1000000>;
-	};
+        spifram: spi@1 {
+                compatible = "atmel,at25", "cypress,fm25l16b";
+                reg = <1>;
+                spi-max-frequency = <20000000>;
+                size = <0x800>;
+                address-width = <16>;
+                pagesize = <64>;
+        };
+
 };
 
 &ecspi4 {
