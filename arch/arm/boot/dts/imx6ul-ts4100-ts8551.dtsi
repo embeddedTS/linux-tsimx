@@ -51,6 +51,8 @@
 	aliases {
 		ethernet0 = &fec2;
 		ethernet1 = &fec1;
+		rtc0 = &strtc;
+		rtc1 = &snvs_rtc;
 	};
 
 	pxp_v4l2 {
@@ -297,10 +299,16 @@
 		ngpio = <128>;
 	};
 
+	strtc: m41t00s@68 {
+		compatible = "m41t00";
+		reg = <0x68>;
+	};
+
+
 };
 
 &snvs_rtc {
-	status = "ok";
+	status = "okay";
 };
 
 &snvs_poweroff {

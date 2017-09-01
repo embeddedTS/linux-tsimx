@@ -375,6 +375,7 @@ dtb-$(CONFIG_SOC_IMX6SX) += \
 dtb-$(CONFIG_SOC_IMX6UL) += \
 	imx6ul-ts4100.dtb \
 	imx6ul-ts4100-2.dtb \
+	imx6ul-ts4100-16.dtb \
 	imx6ul-ts7180.dtb \
 	imx6ul-ts718A.dtb \
 	imx6ul-ts7553v2.dtb \
