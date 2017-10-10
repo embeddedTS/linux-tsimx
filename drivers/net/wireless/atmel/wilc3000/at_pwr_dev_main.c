@@ -136,6 +136,7 @@ static int at_pwr_probe(struct platform_device *pdev)
 	struct device_node *node;
 	int ret;
 
+	const struct firmware *wilc_firmware;
 	PRINT_D(PWRDEV_DBG, "at_pwr_dev: probe\n");
 
 	/* Get GPIO numbers from DT */
@@ -517,8 +518,7 @@ int at_pwr_register_bus(int source)
 					PRINT_D(PWRDEV_DBG, "spi probe is called\n");
 					pwr_dev.bus_registered[source] = true;
 					if (!hif_spi.hif_init(&inp)){
-						ret = 0;
-						/*ret = -ENODEV;*/
+						ret = -ENODEV;
 					}
 					memcpy((void *)&pwr_dev.hif_func, &hif_spi, sizeof(struct wilc_hif_func));
 				}
