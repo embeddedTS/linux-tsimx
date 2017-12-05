@@ -66,6 +66,12 @@
 			gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
+
+		en-emmc {
+			label = "en-emmc";
+			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
 	};
 
 		gpio-keys {
@@ -141,19 +147,6 @@
 			regulator-type = "voltage";
 			gpios = <&gpio5 3 GPIO_ACTIVE_HIGH>;
 			states = <1300000 0x1 1400000 0x0>;
-		};
-
-		/* This is not connected to any used IO */
-		reg_usb_otg1_vbus: regulator@2 {
-			compatible = "regulator-fixed";
-			reg = <2>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&pinctrl_usb_otg1>;
-			regulator-name = "usb_otg1_vbus";
-			regulator-min-microvolt = <5000000>;
-			regulator-max-microvolt = <5000000>;
-			gpio = <&gpio5 2 GPIO_ACTIVE_HIGH>;
-			enable-active-high;
 		};
 
 		reg_sd1_vmmc: sd1_vmmc {
@@ -354,7 +347,6 @@
 
 &usbotg1 {
 /*TODO: Use dr_mode = "device" ?*/
-	vbus-supply = <&reg_usb_otg1_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb_otg1_id>;
 	srp-disable;
@@ -386,8 +378,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	no-1-8-v;
-	non-removable;
-	enable-sdio-wakeup;
+	broken-cd = <1>;
 	bus-width = <4>;
 	status = "okay";
 };
@@ -462,6 +453,7 @@
 				MX6UL_PAD_LCD_DATA19__GPIO3_IO24     0x1b020 /* RES_STRAP_1 */
 				MX6UL_PAD_LCD_DATA22__GPIO3_IO27     0x1b020 /* RES_STRAP_2 */
 				MX6UL_PAD_LCD_DATA23__GPIO3_IO28     0x1b020 /* RES_STRAP_3 */
+				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02   0x1b020
 			>;
 		};
 
@@ -469,12 +461,6 @@
 			/* Wired always high for device mode on TS-7553-V2 */
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID	0x16059
-			>;
-		};
-
-		pinctrl_usb_otg1: usbotg1grp {
-			fsl,pins = <
-				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x1b020
 			>;
 		};
 
