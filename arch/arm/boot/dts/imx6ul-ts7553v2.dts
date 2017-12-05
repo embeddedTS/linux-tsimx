@@ -118,6 +118,7 @@
 	aliases {
 		ethernet0 = &fec1;
 		i2c3 = &i2cgpio;
+		i2c0 = &i2c1gpio;
 	};
 
 	pxp_v4l2 {
@@ -175,6 +176,28 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		status = "okay";
+	};
+
+	i2c1gpio: i2c1gpio {
+		compatible = "i2c-gpio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_i2c1_gpio>;
+		gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>, /* sda */
+			<&gpio1 2 GPIO_ACTIVE_HIGH>; /* scl */
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		status = "okay";
+
+		rtc: m41t00s@68 {
+			compatible = "m41t00";
+			reg = <0x68>;
+		};
+
+		silabs: silabs@2a {
+			compatible = "ts-wdt";
+			reg = <0x2a>;
+		};
 	};
 };
 
@@ -369,26 +392,6 @@
 	status = "okay";
 };
 
-&i2c1 {
-	clock-frequency = <100000>;
-	pinctrl-names = "default", "gpio";
-	pinctrl-0 = <&pinctrl_i2c1>;
-	pinctrl-1 = <&pinctrl_i2c1_gpio>;
-	status = "okay";
-	scl-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
-	sda-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
-
-	rtc: m41t00s@68 {
-		compatible = "m41t00";
-		reg = <0x68>;
-	};
-
-	silabs: silabs@2a {
-		compatible = "ts-wdt";
-		reg = <0x2a>;
-	};
-
-};
 
 &i2c3 {
 	clock-frequency = <400000>;
