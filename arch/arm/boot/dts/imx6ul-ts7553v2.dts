@@ -62,12 +62,6 @@
 			default-state = "off";
 		};
 
-		en-can {
-			label = "en-can";
-			gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
-			default-state = "on";
-		};
-
 		en-emmc {
 			label = "en-emmc";
 			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
@@ -168,6 +162,16 @@
 			regulator-max-microvolt = <3000000>;
 			gpio = <&gpio2 10 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
+		};
+
+		reg_flexcan_3v3: en-can@0 {
+			compatible = "regulator-fixed";
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_flexcan_3v3>;
+			regulator-name = "en-can";
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3000000>;
+			gpio = <&gpio5 9 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -286,12 +290,14 @@
 &flexcan1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
+	xceiver-supply = <&reg_flexcan_3v3>;
 	status = "okay";
 };
 
 &flexcan2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan2>;
+	xceiver-supply = <&reg_flexcan_3v3>;
 	status = "okay";
 };
 
@@ -473,7 +479,6 @@
 				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01     0x1b020 /* USB 5 v */
 				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08     0x1b020 /* MODEM 5 v */
 				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09     0x1b020 /* XBee 3.3 v */
-				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09   0x1b020 /* CAN En. */
 				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02   0x1b020 /* eMMC En. */
 			>;
 		};
@@ -496,6 +501,12 @@
 			fsl,pins = <
 				MX6UL_PAD_LCD_DATA10__FLEXCAN2_TX 	0x1b020
 				MX6UL_PAD_LCD_DATA11__FLEXCAN2_RX	0x1b020
+			>;
+		};
+
+		pinctrl_flexcan_3v3: flexcan3v3grp {
+			fsl,pins = <
+				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09   0x1b020 /* CAN En. */
 			>;
 		};
 
