@@ -385,6 +385,7 @@
 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
+	disable-wp;
 	broken-cd = <1>;
 	bus-width = <4>;
 	vmmc-supply = <&reg_sd1_vmmc>;
@@ -395,6 +396,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	no-1-8-v;
+	disable-wp;
 	broken-cd = <1>;
 	bus-width = <4>;
 	status = "okay";
