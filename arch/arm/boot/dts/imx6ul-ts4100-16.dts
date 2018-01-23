@@ -11,6 +11,7 @@
  */
 
 /dts-v1/;
+#include "imx6ul-ts4100.dtsi"
 #include "imx6ul-ts4100-ts8551.dtsi"
 
 / {
