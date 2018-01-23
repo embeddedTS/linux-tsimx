@@ -173,7 +173,7 @@
 	wilc_spi@0 {
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
-		spi-max-frequency = <24000000>;
+		spi-max-frequency = <48000000>;
 		wilc3000,reset-gpios = <&gpio6 21 0>;     /* RESET,  GPIO 181 */
 		wilc3000,chip-en-gpios = <&gpio6 20 0>;	  /* ENABLE, GPIO 180 */
 		wilc3000,irq-gpios = <&gpio5 8 0>;	  /* IRQ,    GPIO 136 */
