@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Technologic Systems
+ * Copyright 2018 Technologic Systems
  *
  * This file is dual-licensed: you can use it either under the terms
  * of the GPL or the X11 license, at your option. Note that this dual
@@ -52,6 +52,8 @@
 	};
 
 	leds {
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio_leds>;
 		compatible = "gpio-leds";
 
 		green-led {
@@ -64,6 +66,17 @@
 			label = "red-led";
 			gpios = <&gpio6 28 GPIO_ACTIVE_LOW>;
 			default-state = "off";
+		};
+
+               /* The following are meant to be userspace controlled IO. The
+		* kernel does not allow setting default state of GPIO, but
+		* the default state of LEDs can be set, which is why the LED
+		* subsystem is used.
+		*/
+		en-emmc {
+			label = "en-emmc";
+			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
 		};
 	};
 
@@ -280,6 +293,8 @@
 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
+	disable-wp;
+	broken-cd = <1>;
 	bus-width = <4>;
 	vmmc-supply = <&reg_sd1_vmmc>;
 	status = "okay";
@@ -289,7 +304,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	no-1-8-v;
-	non-removable;
+	disable-wp;
+	broken-cd = <1>;
 	enable-sdio-wakeup;
 	bus-width = <4>;
 	status = "okay";
@@ -348,6 +364,13 @@
 &iomuxc {
 	pinctrl-names = "default";
 	imx6ul-ts4100 {
+		pinctrl_gpio_leds: gpioledgrp {
+			fsl,pins = <
+				/* eMMC En. */
+				MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02   0x1b020
+			>;
+		};
+
 		pinctrl_usb_otg1_id: usbotg1idgrp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID	0x17059
@@ -543,12 +566,12 @@
 
 		pinctrl_ecspi3: ecspi3grp {
 			fsl,pins = <
-				// SPI_3_FPGA_CS#
+				/* SPI_3_FPGA_CS# */
 				MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x10b0 
 				MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK   0x10b0
 				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x10b0
 				MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x10b0
-				// SPI_3_OFF_BD_CS#
+				/* SPI_3_OFF_BD_CS# */
 				MX6UL_PAD_NAND_ALE__GPIO4_IO10      0x10b0 
 			>;
 		};
@@ -558,9 +581,9 @@
 				MX6UL_PAD_NAND_DATA04__ECSPI4_SCLK  0x10b0
 				MX6UL_PAD_NAND_DATA05__ECSPI4_MOSI  0x10b0
 				MX6UL_PAD_NAND_DATA06__ECSPI4_MISO  0x10b0
-				// WIFI chip select
+				/* WIFI chip select */
 				MX6UL_PAD_NAND_DATA07__GPIO4_IO09   0x10b0  
-				// SPARE_4/WIFI_IRQ
+				/* SPARE_4/WIFI_IRQ */
 				MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08  0x1b020 
 			>;
 		};
