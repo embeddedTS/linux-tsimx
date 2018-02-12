@@ -46,8 +46,20 @@
 	status = "disabled";
 };
 
+&uart4 {
+	pinctrl-10 = <&pinctrl_8551txen>;
+	fsl,uart-has-rtscts;
+	fsl,uart-tx-enable-gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>;
+	linux,rs485-enabled-at-boot-time;
+};
+
 &iomuxc {
 	pinctrl-names = "default";
 	imx6ul-ts4100 {
+		pinctrl_8551txen: ts8551txen {
+			fsl,pins = <
+				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19  0x1b020
+			>;
+		};
 	};
 };
