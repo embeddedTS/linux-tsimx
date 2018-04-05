@@ -25,6 +25,26 @@
 	};
 };
 
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+};
+
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2>;
+};
+
+&pwm5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm5>;
+};
+
+&pwm6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm6>;
+};
+
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
@@ -32,7 +52,6 @@
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01     0x17059 /* GPIO_1_ADC */
-				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09     0x17059 /* GPIO_9_ADC */
 				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18    0x1b020 /* SPARE_1 */
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19    0x1b020 /* SPARE_2 */
 				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00   0x1b020 /* POWER_FAIL */
@@ -43,6 +62,27 @@
 				MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05   0x1b020 /* JTAG_FPGA_TDI */
 				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06   0x1b020 /* JTAG_FPGA_TMS */
 				MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07   0x1b020 /* JTAG_FPGA_TCK */
+			>;
+		};
+
+		pinctrl_pwm1: ts4100pwm1 {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO08__PWM1_OUT  0x13020
+			>;
+		};
+		pinctrl_pwm2: ts4100pwm2 {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO09__PWM2_OUT  0x13020
+			>;
+		};
+		pinctrl_pwm5: ts4100pwm5 {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA18__PWM5_OUT  0x13020
+			>;
+		};
+		pinctrl_pwm6: ts4100pwm6 {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA19__PWM6_OUT  0x13020
 			>;
 		};
 	};
