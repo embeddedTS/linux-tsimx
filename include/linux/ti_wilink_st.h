@@ -206,9 +206,9 @@ void gps_chrdrv_stub_init(void);
 /* time in msec to wait for
  * line discipline to be installed
  */
-#define LDISC_TIME	1000
-#define CMD_RESP_TIME	800
-#define CMD_WR_TIME	5000
+#define LDISC_TIME	10000
+#define CMD_RESP_TIME	8000
+#define CMD_WR_TIME	50000
 #define MAKEWORD(a, b)  ((unsigned short)(((unsigned char)(a)) \
 	| ((unsigned short)((unsigned char)(b))) << 8))
 
