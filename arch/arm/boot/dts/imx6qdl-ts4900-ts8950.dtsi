@@ -135,9 +135,9 @@
 		compatible = "ti,tsc2046";
 		reg = <1>;
 		interrupt-parent = <&gpio4>;
-		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+		interrupts = <25 2>;
 		vcc-supply = <&reg_3p3v>;
-		spi-max-frequency = <2000000>;
+		spi-max-frequency = <100000>;
 		pendown-gpio = <&gpio4 25 0>;
 		ti,penirq-recheck-delay-usecs = /bits/ 16 <5000>;
 		ti,vref-mv = <3300>;
@@ -147,6 +147,7 @@
 		ti,vref-delay-usecs = /bits/ 16 <0>;
 		ti,x-plate-ohms = /bits/ 16 <715>;
 		ti,y-plate-ohms = /bits/ 16 <325>;
+		ti,pressure-max = /bits/ 16 <15000>;
 		ti,debounce-rep = /bits/ 16 <3>;
 		ti,debounce-tol = /bits/ 16 <65535>;
 		ti,debounce-max = /bits/ 16 <0>;
