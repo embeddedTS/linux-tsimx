@@ -1586,12 +1586,12 @@ static void wilc_wlan_power(int power)
       gpio_direction_output(chip_en_gpio, 0);
       gpio_direction_output(reset_gpio, 0);
       if (power) {
-         gpio_set_value(chip_en_gpio, 1);
+         gpio_set_value_cansleep(chip_en_gpio, 1);
          mdelay(5);
-         gpio_set_value(reset_gpio, 1);
+         gpio_set_value_cansleep(reset_gpio, 1);
       } else {
-         gpio_set_value(reset_gpio, 0);
-         gpio_set_value(chip_en_gpio, 0);
+         gpio_set_value_cansleep(reset_gpio, 0);
+         gpio_set_value_cansleep(chip_en_gpio, 0);
       }
       gpio_free(chip_en_gpio);
       gpio_free(reset_gpio);
