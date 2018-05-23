@@ -48,6 +48,7 @@
 	};
 
 	memory {
+		/* Base 512 MB can be updated from U-Boot */
 		reg = <0x80000000 0x20000000>;
 	};
 
@@ -56,6 +57,10 @@
 		pinctrl-0 = <&pinctrl_gpio_leds>;
 		compatible = "gpio-leds";
 
+		/* NOTE: The physical LEDs are on the baseboard, it may be
+		 * possible in the future that these will move from this global
+		 * dtsi to specific implementation dts files.
+		 */
 		green-led {
 			label = "green-led";
 			gpios = <&gpio6 27 GPIO_ACTIVE_LOW>;
@@ -232,6 +237,30 @@
 	fsl,ldo-bypass = <0>; /* DCDC, ldo-enable */
 };
 
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2>;
+	status = "okay";
+};
+
+&pwm5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm5>;
+	status = "okay";
+};
+
+&pwm6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm6>;
+	status = "okay";
+};
+
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -245,6 +274,7 @@
 };
 
 &uart3 {
+	/* BT, requires CTS/RTS */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
@@ -286,6 +316,9 @@
 };
 
 &usdhc1 {
+	/* keep-power-in-suspend has been found to not have any significant
+	 * reduction in power
+	 */
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc1>;
 	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
@@ -366,7 +399,92 @@
 
 &iomuxc {
 	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog>;
 	imx6ul-ts4100 {
+		/* NOTE: All of the hogged pins below are the common rule.
+		 * Exceptions for them are listed in their respective baseboard
+		 * DTS.
+		 *
+		 * Most IO pins default to GPIO, however they are set up with
+		 * keepers rather than a sane pull.  Because of that, we have to
+		 * list them all here so they are set up in a known state.
+		 * It is then up to individual DTS files to call out the pinctrl
+		 * needed for pins that could have different states.
+		 */
+		/* All GPIO should be 0x1b020 unless special
+		 * 0x1b020 == Hyst., 100k PU, 50 mA drive
+		 * 0x1a020 == no pull resistor
+		 * 0x13020 == 100k PD
+		 */
+		pinctrl_hog: hoggrp {
+			fsl,pins = <
+				/* POWER_FAIL */
+				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x13020
+				/* FPGA_IRQ */
+				MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x13020
+				/* FPGA_RESET# */
+				MX6UL_PAD_NAND_WP_B__GPIO4_IO11		0x1b020
+				/* JTAG_FPGA_TDO */
+				MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04	0x1b020
+				/* JTAG_FPGA_TDI */
+				MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x1b020
+				/* JTAG_FPGA_TMS */
+				MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06	0x1b020
+				/* JTAG_FPGA_TCK */
+				MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x1b020
+				/* SPARE_1 */
+				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18	0x1b020
+				/* SPARE_2 */
+				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x1b020
+				/* GPIO 1 */
+				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01	0x1b020
+			>;
+		};
+
+		pinctrl_cam_gpio: cameragpio {
+			fsl,pins = <
+				/* Camera interface pins */
+				MX6UL_PAD_CSI_DATA00__GPIO4_IO21	0x1b020
+				MX6UL_PAD_CSI_DATA01__GPIO4_IO22	0x1b020
+				MX6UL_PAD_CSI_DATA02__GPIO4_IO23	0x1b020
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24	0x1b020
+				MX6UL_PAD_CSI_DATA04__GPIO4_IO25	0x1b020
+				MX6UL_PAD_CSI_DATA05__GPIO4_IO26	0x1b020
+				MX6UL_PAD_CSI_DATA06__GPIO4_IO27	0x1b020
+				MX6UL_PAD_CSI_DATA07__GPIO4_IO28	0x1b020
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20		0x1b020
+				MX6UL_PAD_CSI_MCLK__GPIO4_IO17		0x1b020
+				MX6UL_PAD_CSI_PIXCLK__GPIO4_IO18	0x1b020
+				MX6UL_PAD_CSI_VSYNC__GPIO4_IO19		0x1b020
+			>;
+		};
+
+		pinctrl_lcd_gpio: lcdgpio {
+			fsl,pins = <
+				/* LCD Interface pins */
+				MX6UL_PAD_LCD_DATA02__GPIO3_IO07	0x1b020
+				MX6UL_PAD_LCD_DATA03__GPIO3_IO08	0x1b020
+				MX6UL_PAD_LCD_DATA04__GPIO3_IO09	0x1b020
+				MX6UL_PAD_LCD_DATA05__GPIO3_IO10	0x1b020
+				MX6UL_PAD_LCD_DATA06__GPIO3_IO11	0x1b020
+				MX6UL_PAD_LCD_DATA07__GPIO3_IO12	0x1b020
+				MX6UL_PAD_LCD_DATA10__GPIO3_IO15	0x1b020
+				MX6UL_PAD_LCD_DATA11__GPIO3_IO16	0x1b020
+				MX6UL_PAD_LCD_DATA12__GPIO3_IO17	0x1b020
+				MX6UL_PAD_LCD_DATA13__GPIO3_IO18	0x1b020
+				MX6UL_PAD_LCD_DATA14__GPIO3_IO19	0x1b020
+				MX6UL_PAD_LCD_DATA15__GPIO3_IO20	0x1b020
+				MX6UL_PAD_LCD_DATA20__GPIO3_IO25	0x1b020
+				MX6UL_PAD_LCD_DATA21__GPIO3_IO26	0x1b020
+				MX6UL_PAD_LCD_DATA22__GPIO3_IO27	0x1b020
+				MX6UL_PAD_LCD_DATA23__GPIO3_IO28	0x1b020
+				MX6UL_PAD_LCD_CLK__GPIO3_IO00		0x1b020
+				MX6UL_PAD_LCD_ENABLE__GPIO3_IO01	0x1b020
+				MX6UL_PAD_LCD_HSYNC__GPIO3_IO02		0x1b020
+				MX6UL_PAD_LCD_VSYNC__GPIO3_IO03		0x1b020
+			>;
+		};
+
 		pinctrl_gpio_leds: gpioledgrp {
 			fsl,pins = <
 				/* eMMC En. */
@@ -397,6 +515,30 @@
 			fsl,pins = <
 				MX6UL_PAD_UART2_RTS_B__FLEXCAN2_RX	0x1b020
 				MX6UL_PAD_UART2_CTS_B__FLEXCAN2_TX	0x1b020
+			>;
+		};
+
+		pinctrl_pwm1: ts4100pwm1 {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO08__PWM1_OUT  0x13020
+			>;
+		};
+
+		pinctrl_pwm2: ts4100pwm2 {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO09__PWM2_OUT  0x13020
+			>;
+		};
+
+		pinctrl_pwm5: ts4100pwm5 {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA18__PWM5_OUT  0x13020
+			>;
+		};
+
+		pinctrl_pwm6: ts4100pwm6 {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA19__PWM6_OUT  0x13020
 			>;
 		};
 

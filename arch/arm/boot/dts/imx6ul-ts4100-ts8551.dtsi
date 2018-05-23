@@ -53,53 +53,13 @@
 	linux,rs485-enabled-at-boot-time;
 };
 
-&pwm1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm1>;
-};
-
-&pwm2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm2>;
-};
-
-&pwm5 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm5>;
-};
-
-&pwm6 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm6>;
-};
-
 &iomuxc {
 	pinctrl-names = "default";
+	pinctrl-1 = <&pinctrl_cam_gpio &pinctrl_lcd_gpio>;
 	imx6ul-ts4100 {
 		pinctrl_8551txen: ts8551txen {
 			fsl,pins = <
 				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19  0x1b020
-			>;
-		};
-
-		pinctrl_pwm1: ts8551pwm1 {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO08__PWM1_OUT  0x13020
-			>;
-		};
-		pinctrl_pwm2: ts8551pwm2 {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO09__PWM2_OUT  0x13020
-			>;
-		};
-		pinctrl_pwm5: ts8551pwm5 {
-			fsl,pins = <
-				MX6UL_PAD_LCD_DATA18__PWM5_OUT  0x13020
-			>;
-		};
-		pinctrl_pwm6: ts8551pwm6 {
-			fsl,pins = <
-				MX6UL_PAD_LCD_DATA19__PWM6_OUT  0x13020
 			>;
 		};
 	};
