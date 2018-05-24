@@ -47,5 +47,4 @@ obj-$(CONFIG_UNISYSSPAR)	+= unisys/
 obj-$(CONFIG_COMMON_CLK_XLNX_CLKWZRD)	+= clocking-wizard/
 obj-$(CONFIG_FB_TFT)		+= fbtft/
 obj-$(CONFIG_I2O)		+= i2o/
-obj-$(CONFIG_WILC)		+= wilc1000/
 obj-$(CONFIG_FSL_MC_BUS)	+= fsl-mc/

@@ -112,6 +112,4 @@ source "drivers/staging/i2o/Kconfig"
 
 source "drivers/staging/fsl-mc/Kconfig"
 
-source "drivers/staging/wilc1000/Kconfig"
-
 endif # STAGING

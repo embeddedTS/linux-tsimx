@@ -284,6 +284,7 @@ source "drivers/net/wireless/zd1211rw/Kconfig"
 source "drivers/net/wireless/mwifiex/Kconfig"
 source "drivers/net/wireless/cw1200/Kconfig"
 source "drivers/net/wireless/rsi/Kconfig"
+source "drivers/net/wireless/wilc1000/Kconfig"
 source "drivers/net/wireless/atmel/Kconfig"
 
 endif # WLAN
