@@ -580,11 +580,14 @@ static int kszphy_probe(struct phy_device *phydev)
 static int ksz8081_resume(struct phy_device *phydev)
 {
 	int value;
+	struct kszphy_priv *priv = phydev->priv;
 
 	mutex_lock(&phydev->lock);
 	value = phy_read(phydev, MII_BMCR);
 	phy_write(phydev, MII_BMCR, value & ~BMCR_PDOWN);
-
+	if (priv->rmii_ref_clk_sel) {
+		kszphy_rmii_clk_sel(phydev, priv->rmii_ref_clk_sel_val);
+	}
 	value = phy_scan_fixups(phydev);
 	if (value < 0)
 		return value;
