@@ -206,11 +206,15 @@
 		#size-cells = <0>;
 
 		ethphy0: ethernet-phy@2 {
+			clocks = <&clks IMX6UL_CLK_ENET_REF>;
+			clock-names = "rmii-ref";
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <2>;
 		};
 
 		ethphy1: ethernet-phy@1 {
+			clocks = <&clks IMX6UL_CLK_ENET2_REF>;
+			clock-names = "rmii-ref";
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <1>;
 		};
