@@ -191,6 +191,7 @@ static int wilc_bus_remove(struct spi_device *spi)
 {
    wilc_netdev_cleanup(spi_get_drvdata(spi));
    wilc_bt_deinit();
+   wilc_wlan_power_off_sequence();
    return 0;
 }
 
