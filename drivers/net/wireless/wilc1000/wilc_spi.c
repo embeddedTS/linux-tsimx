@@ -181,7 +181,7 @@ L1:
    mutex_init(&wilc->hif_cs);
 
    wilc_bt_init(wilc);
-
+   wilc->dev_active = NONE;
 
    dev_info(&spi->dev, "WILC SPI probe success\n");
    return 0;

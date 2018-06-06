@@ -495,6 +495,9 @@ void wilc_bt_init(struct wilc *wilc)
 {
    wilc_bt = wilc;
    wilc_bt_create_device();
+   wilc_cmd_handle_bt_power_up();
+   wilc_cmd_handle_bt_fw_chip_wake_up();
+   wilc_cmd_handle_bt_download_fw();
 }
 EXPORT_SYMBOL_GPL(wilc_bt_init);
 
