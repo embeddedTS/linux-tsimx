@@ -46,10 +46,9 @@
 	status = "disabled";
 };
 
-&uart4 { /* Append support for TXEN to pinctrl */
-	pinctrl-10 = <&pinctrl_8551txen>;
+&uart4 {
 	fsl,uart-has-rtscts;
-	fsl,uart-tx-enable-gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>;
+	fsl,uart-tx-enable-gpios = <&gpio6 49 GPIO_ACTIVE_HIGH>;
 	linux,rs485-enabled-at-boot-time;
 };
 
@@ -57,10 +56,5 @@
 	pinctrl-names = "default";
 	pinctrl-1 = <&pinctrl_cam_gpio &pinctrl_lcd_gpio>;
 	imx6ul-ts4100 {
-		pinctrl_8551txen: ts8551txen {
-			fsl,pins = <
-				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19  0x1b020
-			>;
-		};
 	};
 };
