@@ -337,7 +337,7 @@
 		reg = <0x68>;
 	};
 
-	imu: mpu9250a@68 {
+	imu: mpu9250a@69 {
 		compatible = "mpu9250";
 		reg = <0x69>;
 		interrupt-parent = <&gpio4>;
