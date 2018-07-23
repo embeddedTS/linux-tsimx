@@ -121,11 +121,31 @@ static void do_ts_halt(enum reboot_mode reboot_mode, const char *cmd)
 {
 	unsigned long flags;
 	static DEFINE_SPINLOCK(wdt_lock);
+	u8 out[3];
+	int ret;
+	struct i2c_msg msg;
 
 	dev_dbg(&client->dev, "%s\n", __func__);
 
 	spin_lock_irqsave(&wdt_lock, flags);
 	ts_wdt_write(3);
+
+	out[0] = 0x40;
+	out[1] = 0xAA;
+	out[2] = 0xAA;
+
+	msg.addr = client->addr;
+	msg.flags = 0;
+	msg.len = 3;
+	msg.buf = out;
+
+	ret = i2c_transfer(client->adapter, &msg, 1);
+	if (ret != 1) {
+		dev_err(&client->dev, "%s: write error, ret=%d\n",
+			__func__, ret);
+	}
+
+
 	while (1);
 }
 
