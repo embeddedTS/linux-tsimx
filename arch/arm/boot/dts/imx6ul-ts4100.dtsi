@@ -140,9 +140,9 @@
 		reg_sd1_vmmc: sd1_vmmc {
 			compatible = "regulator-fixed";
 			regulator-name = "SD1_SPWR";
-			regulator-min-microvolt = <3000000>;
-			regulator-max-microvolt = <3000000>;
-			gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			enable-gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 		};
 	};
@@ -327,9 +327,16 @@
 	pinctrl-0 = <&pinctrl_usdhc1>;
 	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
+	max-frequency = <208000000>;
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
 	disable-wp;
+	cap-sd-highspeed;
+	sd-uhs-sdr12;
+	sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	sd-uhs-ddr50;
 	broken-cd = <1>;
 	bus-width = <4>;
 	vmmc-supply = <&reg_sd1_vmmc>;
@@ -422,6 +429,10 @@
 		 */
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
+				/* EN_SD_POWER, special setting*/
+				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09	0x17059
+				/* SD1 VSELECT, special setting */
+				MX6UL_PAD_GPIO1_IO05__USDHC1_VSELECT	0x17059
 				/* POWER_FAIL */
 				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x13020
 				/* FPGA_IRQ */
@@ -666,10 +677,6 @@
 				MX6UL_PAD_SD1_DATA1__USDHC1_DATA1    0x17059
 				MX6UL_PAD_SD1_DATA2__USDHC1_DATA2    0x17059
 				MX6UL_PAD_SD1_DATA3__USDHC1_DATA3    0x17059
-				/* EN_SD_POWER */
-				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09   0x17059 
-				/* SD1 VSELECT */
-				MX6UL_PAD_GPIO1_IO05__USDHC1_VSELECT 0x17059 
 			>;
 		};
 
