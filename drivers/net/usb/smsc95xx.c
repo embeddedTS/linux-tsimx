@@ -913,9 +913,11 @@ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
 static void smsc95xx_init_mac_address(struct usbnet *dev)
 {
 	const u8 *mac_addr;
+	struct device_node *np;
 
 	/* maybe the boot loader passed the MAC address in devicetree */
-	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
+	np = of_find_node_by_name(NULL, "smsc95xx");
+	mac_addr = of_get_mac_address(np);
 	if (mac_addr) {
 		memcpy(dev->net->dev_addr, mac_addr, ETH_ALEN);
 		return;
