@@ -703,6 +703,8 @@ static void reduce_bus_freq_handler(struct work_struct *work)
  */
 static int set_low_bus_freq(void)
 {
+	return 0;
+	
 	if (busfreq_suspended)
 		return 0;
 
