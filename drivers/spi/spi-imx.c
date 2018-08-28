@@ -791,7 +791,7 @@ static void spi_imx_chipselect(struct spi_device *spi, int is_active)
 	if (!gpio_is_valid(spi->cs_gpio))
 		return;
 
-	gpio_set_value(spi->cs_gpio, dev_is_lowactive ^ active);
+	gpio_set_value_cansleep(spi->cs_gpio, dev_is_lowactive ^ active);
 }
 
 static void spi_imx_push(struct spi_imx_data *spi_imx)
