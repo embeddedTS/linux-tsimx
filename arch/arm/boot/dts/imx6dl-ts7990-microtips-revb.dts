@@ -1,0 +1,112 @@
+/*
+ * Copyright 2017 Technologic Systems
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ *  a) This file is free software; you can redistribute it and/or
+ *     modify it under the terms of the GNU General Public License
+ *     version 2 as published by the Free Software Foundation.
+ *
+ *     This file is distributed in the hope that it will be useful
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ * Or, alternatively
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/dts-v1/;
+#include "imx6dl.dtsi"
+#include "imx6qdl-ts7990.dtsi"
+
+/ {
+	model = "Technologic Systems i.MX6 Solo/DualLite TS-7990 (Microtips)";
+	compatible = "fsl,imx6dl-ts4900", "fsl,imx6dl";
+
+	aliases {
+		mxcfb0 = &mxcfb0;
+	};
+
+	mxcfb0: fb@0 {
+		compatible = "fsl,mxc_sdc_fb";
+		disp_dev = "lcd";
+		interface_pix_fmt = "RGB24";
+		mode_str ="MICROTIPS-WVGA";
+		default_bpp = <16>;
+		int_clk = <0>;
+		late_init = <0>;
+		status = "okay";
+	};
+
+	wifi_spi {
+		compatible = "spi-gpio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ecspi5gpio>;
+		status = "okay";
+		num-chipselects = <1>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		gpio-sck = <&gpio1 20 0>;
+		gpio-mosi = <&gpio1 18 0>;
+		gpio-miso = <&gpio1 16 0>;
+		cs-gpios = <&gpio1 17 0>;
+
+		wilc_spi@0 {
+			compatible = "atmel,wilc_spi";
+			reg = <0>;
+			spi-max-frequency = <24000000>;
+			wilc3000,reset-gpios = <&gpio8 14 0>;
+			wilc3000,chip-en-gpios = <&gpio8 13 0>;
+			wilc3000,irq-gpios = <&gpio1 26 0>;
+			status = "okay";
+		};
+	};
+};
+
+&epdc {
+	status = "disabled";
+};
+
+&iomuxc {
+	pinctrl-names = "default";
+	imx6-ts7990 {
+		pinctrl_ecspi5gpio: ecspi5gpio {
+			fsl,pins = <
+				MX6QDL_PAD_SD1_CMD__GPIO1_IO18		0x100b1 /* mosi */
+				MX6QDL_PAD_SD1_CLK__GPIO1_IO20		0x100b1 /* sclk */
+				MX6QDL_PAD_SD1_DAT0__GPIO1_IO16		0x100b1 /* miso */
+				MX6QDL_PAD_SD1_DAT1__GPIO1_IO17		0x1b088 /* SPI_1_CS# */
+				MX6QDL_PAD_ENET_RXD1__GPIO1_IO26	0x1b088 /* WIFI_IRQ# */
+			>;
+		};
+	};
+};
+
+&touchscreen_spi {
+	status = "okay";
+};
