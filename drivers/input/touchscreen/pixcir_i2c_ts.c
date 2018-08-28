@@ -38,6 +38,7 @@ struct pixcir_i2c_ts_data {
 	struct gpio_desc *gpio_wake;
 	const struct pixcir_i2c_chip_data *chip;
 	struct touchscreen_properties prop;
+	int irq_polarity;
 	int max_fingers;	/* Max fingers supported in this instance */
 	bool running;
 };
@@ -303,7 +304,8 @@ static int pixcir_start(struct pixcir_i2c_ts_data *ts)
 	}
 
 	/* LEVEL_TOUCH interrupt with active low polarity */
-	error = pixcir_set_int_mode(ts, PIXCIR_INT_LEVEL_TOUCH, 0);
+	error = pixcir_set_int_mode(ts, PIXCIR_INT_LEVEL_TOUCH,
+			    ts->irq_polarity);
 	if (error) {
 		dev_err(dev, "Failed to set interrupt mode: %d\n", error);
 		return error;
@@ -429,6 +431,12 @@ static int pixcir_parse_dt(struct device *dev,
 	tsdata->chip = of_device_get_match_data(dev);
 	if (!tsdata->chip)
 		return -EINVAL;
+
+	if (of_property_read_bool(dev->of_node, "active-high-irq")) {
+		tsdata->irq_polarity = 1;
+	} else {
+		tsdata->irq_polarity = 0;
+	}
 
 	return 0;
 }
