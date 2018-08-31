@@ -501,6 +501,14 @@ dtb-$(CONFIG_SOC_IMX6SX) += \
 	imx6sxscm-epop-evb-ldo.dtb \
 	imx6sxscm-epop-evb-m4-ldo.dtb
 dtb-$(CONFIG_SOC_IMX6UL) += \
+	imx6ul-ts4100.dtb \
+	imx6ul-ts4100-2.dtb \
+	imx6ul-ts4100-2f.dtb \
+	imx6ul-ts4100-16.dtb \
+	imx6ul-ts7180.dtb \
+	imx6ul-ts718A.dtb \
+	imx6ul-ts7553v2.dtb \
+	imx6ul-ts7553v2C.dtb \
 	imx6ul-14x14-evk.dtb \
 	imx6ul-14x14-evk-btwifi.dtb \
 	imx6ul-14x14-evk-btwifi-oob.dtb \
