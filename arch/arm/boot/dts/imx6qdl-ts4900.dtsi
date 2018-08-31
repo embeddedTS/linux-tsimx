@@ -166,6 +166,7 @@
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
+		base = <224>;
 		ngpios = <32>;
 	};
 };

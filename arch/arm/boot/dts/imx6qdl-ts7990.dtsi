@@ -365,6 +365,7 @@
 		#gpio-cells = <2>;
 		gpio-controller;
 		ngpios = <64>;
+		base = <224>;
 	};
 };
 
