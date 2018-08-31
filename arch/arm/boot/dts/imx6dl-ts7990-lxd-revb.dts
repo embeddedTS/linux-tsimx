@@ -78,10 +78,10 @@
 		wilc_spi@0 {
 			compatible = "atmel,wilc_spi";
 			reg = <0>;
-			spi-max-frequency = <24000000>;
-			wilc3000,reset-gpios = <&gpio8 14 0>;
-			wilc3000,chip-en-gpios = <&gpio8 13 0>;
-			wilc3000,irq-gpios = <&gpio1 26 0>;
+			spi-max-frequency = <1800000>;
+			gpio_reset = <&gpio8 13 0>;
+			gpio_chip_en = <&gpio8 14 0>;
+			gpio_irq = <&gpio1 26 0>;
 			status = "okay";
 		};
 	};

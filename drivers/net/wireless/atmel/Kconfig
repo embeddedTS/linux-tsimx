@@ -11,6 +11,8 @@ config WLAN_VENDOR_ATMEL
 
 if WLAN_VENDOR_ATMEL
 
+source "drivers/net/wireless/atmel/wilc/Kconfig"
+
 config ATMEL
       tristate "Atmel at76c50x chipset  802.11b support"
       depends on CFG80211 && (PCI || PCMCIA)

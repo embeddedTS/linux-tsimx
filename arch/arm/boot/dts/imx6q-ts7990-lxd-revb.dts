@@ -77,10 +77,11 @@
 	wilc_spi@0 {
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
-		spi-max-frequency = <24000000>;
-		wilc3000,reset-gpios = <&gpio8 14 0>;
-		wilc3000,chip-en-gpios = <&gpio8 13 0>;
-		wilc3000,irq-gpios = <&gpio1 26 0>;
+		spi-max-frequency = <1800000>;
+		gpio_reset = <&gpio8 13 0>;
+		gpio_chip_en = <&gpio8 14 0>;
+		gpio_irq = <&gpio1 26 0>;
+
 		status = "okay";
 	};
 };
@@ -90,9 +91,9 @@
 	imx6-ts7990 {
 		pinctrl_ecspi5: ecspi5 {
 			fsl,pins = <
-				MX6QDL_PAD_SD1_CMD__ECSPI5_MOSI		0x100b1
-				MX6QDL_PAD_SD1_CLK__ECSPI5_SCLK		0x100b1
-				MX6QDL_PAD_SD1_DAT0__ECSPI5_MISO	0x100b1
+				MX6QDL_PAD_SD1_CMD__ECSPI5_MOSI		0x1b0b0
+				MX6QDL_PAD_SD1_CLK__ECSPI5_SCLK		0x1b0b0
+				MX6QDL_PAD_SD1_DAT0__ECSPI5_MISO	0x1b0b0
 				MX6QDL_PAD_SD1_DAT1__GPIO1_IO17		0x1b088 /* SPI_1_CS# */
 				MX6QDL_PAD_ENET_RXD1__GPIO1_IO26	0x1b088 /* WIFI_IRQ# */
 			>;
