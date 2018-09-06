@@ -48,12 +48,14 @@
 
 &uart4 {
 	fsl,uart-has-rtscts;
-	fsl,uart-tx-enable-gpios = <&gpio6 49 GPIO_ACTIVE_HIGH>;
+	/* gpio 1_19 is initialized by the hog group in 4100.dtsi
+	 * It is the spare_2 pin, needs to be set up in FPGA to pass to TXEN
+	 */
+	fsl,uart-tx-enable-gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>;
 	linux,rs485-enabled-at-boot-time;
 };
 
 &iomuxc {
-	pinctrl-names = "default";
 	pinctrl-1 = <&pinctrl_cam_gpio &pinctrl_lcd_gpio>;
 	imx6ul-ts4100 {
 	};
