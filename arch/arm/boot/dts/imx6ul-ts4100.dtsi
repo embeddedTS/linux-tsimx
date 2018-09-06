@@ -376,8 +376,8 @@
 	pinctrl-0 = <&pinctrl_i2c3>;
 	pinctrl-1 = <&pinctrl_i2c3_gpio>;
 	status = "okay";
-	scl-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
-	sda-gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
+	gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>, /* sda */
+		<&gpio3 6 GPIO_ACTIVE_HIGH>; /* scl */
 
 	/* FPGA emulates register access like an eeprom */
 	at24@29 {
