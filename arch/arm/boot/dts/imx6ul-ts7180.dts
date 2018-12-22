@@ -180,7 +180,7 @@
 	/* This is actually the FRAM, which is compatible with the AT25 SPI EEPROM */
 	 eeprom: at25@2 {
 				compatible = "atmel,at25";
-				at25,byte-len = <512>;
+				at25,byte-len = <2048>;
 				at25,addr-mode = <2>;
 				at25,page-size = <32>;
 				reg = <2>;
