@@ -185,6 +185,14 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		status = "okay";
+
+		imu: mpu9250a@68 {
+			compatible = "mpu9250";
+			reg = <0x68>;
+			interrupt-parent = <&gpio3>;
+			interrupts = <1 IRQ_TYPE_EDGE_RISING>;
+		};
+
 	};
 
 	i2c1gpio: i2c1gpio {
@@ -661,6 +669,7 @@
 			fsl,pins = <
 				MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04    0x4001a8b0
 				MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05    0x4001a8b0
+				/* IMU interrupt */
 				MX6UL_PAD_LCD_ENABLE__GPIO3_IO01      0x13020
 			>;
 		};
