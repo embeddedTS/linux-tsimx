@@ -1,0 +1,517 @@
+/*
+ * Copyright (C) 2019 Technologic Systems
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/dts-v1/;
+#include <dt-bindings/input/input.h>
+#include "imx6ul.dtsi"
+
+/ {
+	model = "Technologic Systems i.MX6ul TS-7120";
+	compatible = "technologic,ts7120", "fsl,imx6ul";
+
+	chosen {
+		stdout-path = &uart1;
+	};
+
+	memory {
+		reg = <0x80000000 0x20000000>;
+	};
+
+	leds {
+		pinctrl-names = "default";
+		compatible = "gpio-leds";
+
+		red-led {
+			label = "red-led";
+			gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;	// EN_RED_LED#
+			default-state = "off";
+		};
+
+		green-led {
+			label = "green-led";
+			gpios = <&gpio1 19 GPIO_ACTIVE_LOW>;	// EN_GRN_LED#
+			default-state = "on";
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x14000000>;
+			linux,cma-default;
+		};
+	};
+
+	aliases {
+		ethernet0 = &fec2;
+		ethernet1 = &fec1;
+	};
+
+	pxp_v4l2 {
+		compatible = "fsl,imx6ul-pxp-v4l2", "fsl,imx6sx-pxp-v4l2", "fsl,imx6sl-pxp-v4l2";
+		status = "disabled";
+	};
+
+	regulators {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg_gpio_dvfs: regulator-gpio {
+			compatible = "regulator-gpio";
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_dvfs>;
+			regulator-min-microvolt = <1300000>;
+			regulator-max-microvolt = <1400000>;
+			regulator-name = "gpio_dvfs";
+			regulator-type = "voltage";
+			gpios = <&gpio5 3 GPIO_ACTIVE_HIGH>;	// this is the TAMPER3 pin
+			states = <1300000 0x1 1400000 0x0>;
+		};
+
+		reg_sd1_vmmc: sd1_vmmc {
+			compatible = "regulator-fixed";
+			regulator-name = "EN_SD_CARD";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			//gpio = <&gpio6 14 GPIO_ACTIVE_HIGH>;
+			// EN_SD_CARD_3.3V is driven by the FPGA, so we need a gpio driver, asap!
+			enable-active-high;
+			regulator-always-on;
+		};
+
+		reg_adc_vref: adc_vref {
+			compatible = "regulator-fixed";
+			regulator-name = "ADC_VREF";
+			regulator-min-microvolt = <2500000>;
+			regulator-max-microvolt = <2500000>;
+			//gpio = EN_2.5_VREF driven by Silabs;
+			//enable-active-high;
+		};
+	};
+};
+
+&cpu0 {
+	arm-supply = <&reg_arm>;
+	soc-supply = <&reg_soc>;
+	dc-supply = <&reg_gpio_dvfs>;
+};
+
+&ecspi3 {
+	fsl,spi-num-chipselects = <3>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi3>;
+	status = "okay";
+
+
+
+};
+
+
+
+&fec1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet1>;
+	phy-mode = "rmii";
+	phy-handle = <&ethphy0>;
+	status = "okay";
+};
+
+&fec2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_enet2>;
+	phy-mode = "rmii";
+	phy-handle = <&ethphy1>;
+	status = "okay";
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		ethphy0: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+		};
+
+		ethphy1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+		};
+	};
+};
+
+&flexcan1 {	// Screw terminals
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan1>;
+	status = "okay";
+};
+
+&flexcan2 {	// COM header
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan2>;
+	status = "okay";
+};
+
+&gpc {
+	fsl,cpu_pupscr_sw2iso = <0x1>;
+	fsl,cpu_pupscr_sw = <0x0>;
+	fsl,cpu_pdnscr_iso2sw = <0x1>;
+	fsl,cpu_pdnscr_iso = <0x1>;
+	fsl,ldo-bypass = <0>; /* DCDC, ldo-enable */
+};
+
+&uart1 {	// console (aka /dev/ttymxc0)
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+&uart2 {	// COM header (aka /dev/ttymxc1)
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
+&uart3 {	// DMX RJ45 (aka /dev/ttymxc2)
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart3>;
+	status = "okay";
+};
+
+&uart4 {	// OBD STN1110 (aka /dev/ttymxc3)
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
+	status = "okay";
+};
+
+&uart5 {	// Screw terminals (CN32-B) (aka /dev/ttymxc4)
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart5>;
+	status = "okay";
+};
+
+&uart7 {	// Mikro Bus Socket (aka /dev/ttymxc6)
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart7>;
+	status = "okay";
+};
+
+
+&usbotg1 {
+	//vbus-supply = <&reg_usb_otg1_vbus>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usb_otg1_id>;
+	srp-disable;
+	hnp-disable;
+	adp-disable;
+	status = "okay";
+};
+
+&usbotg2 {
+	dr_mode = "host";
+	disable-over-current;
+	status = "okay";
+};
+
+&usdhc1 {	// eMMC
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc1>;
+	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
+	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
+	keep-power-in-suspend;
+	enable-sdio-wakeup;
+	bus-width = <4>;
+	vmmc-supply = <&reg_sd1_vmmc>;
+	status = "disabled";
+};
+
+
+&i2c1 { // bus #0, Used by RTC; Gyro; and Silabs.
+	clock-frequency = <100000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+	scl-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+
+
+	rtc: m41t00s@68 {
+		compatible = "m41t00";
+		reg = <0x68>;
+	};
+
+	imu: mpu9250a@69 {
+		compatible = "mpu9250";
+		reg = <0x69>;
+		/* Note: GYRO_INT goes to the FPGA */
+	};
+
+};
+
+&i2c3 {	// bus #2, Used by the cryptokey chip;  and CN99 off-board i2c
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c3>;
+	status = "okay";
+
+	cryptokey: atsha204@64 {
+		compatible = "atsha204";
+		reg = <0x64>;	// 0xc8? Address may be programmed into the device's EEPROM
+	};
+};
+
+
+&snvs_poweroff {
+	status = "okay";
+};
+
+&snvs_rtc {
+	status = "disabled";
+};
+
+
+&adc1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_adc>;
+	vref-supply = <&reg_adc_vref>;
+	num-channels = <10>;
+	status = "okay";
+};
+
+
+&iomuxc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog>;
+	imx6ul-ts7120 {
+		pinctrl_hog: hoggrp {
+			fsl,pins = <
+
+			MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x11020 // POWER_FAIL_3V
+			MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x1b020 // FPGA_IRQ
+			/* TAMPER2 is N/C on TS-7120 */
+			/* TAMPER3 is GPIO_DVFS, see below */
+			MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04	0x1b020 // EN_RELAY_1 (gpio132)
+			MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x1b020 // EN_RELAY_2 (gpio133)
+			MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06	0x1b020 // EN_RELAY_3 (gpio134)
+			MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x1b020 // EN_RELAY_4 (gpio135)
+			MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x1b020 // EN_RELAY_5 (gpio136)
+			MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09	0x1b020 // EN_RELAY_6 (gpio137)
+			MX6UL_PAD_UART1_CTS_B__GPIO1_IO18	0x1b020 // EN_RED_LED#
+			MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x1b020 // EN_GRN_LED#
+			>;
+		};
+
+		/******************************************************************/
+		/**** USB OTG ****/
+		pinctrl_usb_otg1_id: usbotg1idgrp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID	0x17059	// BOOT_MODE_0
+			>;
+		};
+
+		/******************************************************************/
+		/**** CAN ****/
+		pinctrl_flexcan1: flexcan1grp{
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA08__FLEXCAN1_TX	0x1b020	// CAN_1_TXD
+				MX6UL_PAD_LCD_DATA09__FLEXCAN1_RX	0x1b020	// CAN_1_RXD_3V
+			>;
+		};
+
+		pinctrl_flexcan2: flexcan2grp{
+			fsl,pins = <
+				MX6UL_PAD_UART2_CTS_B__FLEXCAN2_TX	0x1b020	// CAN_2_TXD
+				MX6UL_PAD_UART2_RTS_B__FLEXCAN2_RX	0x1b020	// CAN_2_RXD_3V
+			>;
+		};
+
+		/******************************************************************/
+		/**** UARTS ****/
+		pinctrl_uart1: uart1grp {
+			fsl,pins = <
+				MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX 0x1b0b1	// CONSOLE_TXD
+				MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX 0x1b0b1	// CONSOLE_RXD
+			>;
+		};
+
+		pinctrl_uart2: uart2grp {
+			fsl,pins = <
+				MX6UL_PAD_UART2_TX_DATA__UART2_DCE_TX	0x1b0b1	// UART2_TXD
+				MX6UL_PAD_UART2_RX_DATA__UART2_DCE_RX	0x1b0b1	// UART2_RXD
+			>;
+		};
+
+		pinctrl_uart3: uart3grp {
+			fsl,pins = <
+				MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX	0x1b0b1	// UART3_RXD_3V
+				MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX	0x1b0b1	// UART3_TXD
+			>;
+		};
+
+		pinctrl_uart4: uart4grp {
+			fsl,pins = <
+				MX6UL_PAD_UART4_RX_DATA__UART4_DCE_RX	0x1b0b1	// UART4_RXD_3V
+				MX6UL_PAD_UART4_TX_DATA__UART4_DCE_TX	0x1b0b1	// UART4_TXD
+			>;
+		};
+
+		pinctrl_uart5: uart5grp {
+			fsl,pins = <
+				MX6UL_PAD_UART5_RX_DATA__UART5_DCE_RX	0x1b0b1	// UART5_RXD
+				MX6UL_PAD_UART5_TX_DATA__UART5_DCE_TX	0x1b0b1	// UART5_TXD
+			>;
+		};
+
+		pinctrl_uart7: uart7grp {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA17__UART7_DCE_RX	0x1b0b1	// UART7_RXD
+				MX6UL_PAD_LCD_DATA16__UART7_DCE_TX	0x1b0b1	// UART7_TXD
+			>;
+		};
+
+
+		/**** ETHERNET ****/
+		pinctrl_enet1: enet1grp {
+			fsl,pins = <
+				MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN	0x1b0b0	// to ETH1 PHY CRS
+				MX6UL_PAD_ENET1_RX_ER__ENET1_RX_ER	0x1b0b0  // to ETH1 PHY RXER
+				MX6UL_PAD_ENET1_RX_DATA0__ENET1_RDATA00	0x1b0b0 // to ETH1 PHY RXD0
+				MX6UL_PAD_ENET1_RX_DATA1__ENET1_RDATA01	0x1b0b0 // to ETH1 PHY RXD1
+				MX6UL_PAD_ENET1_TX_EN__ENET1_TX_EN	0x1b0b0 // to ETH1 PHY TXEN
+				MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00	0x1b0b0 // to ETH1 PHY TXD0
+				MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01	0x1b0b0 // to ETH1 PHY TXD1
+				MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1	0x4001b031 // to ETH1 PHY XTAL_IN
+			>;
+		};
+
+		pinctrl_enet2: enet2grp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO07__ENET2_MDC		0x1b0b0	// ETH_MDC
+				MX6UL_PAD_GPIO1_IO06__ENET2_MDIO	0x1b0b0		// ETH_MDIO
+				MX6UL_PAD_ENET2_RX_EN__ENET2_RX_EN	0x1b0b0	// to ETH2 PHY CRS
+				MX6UL_PAD_ENET2_RX_ER__ENET2_RX_ER	0x1b0b0	// to ETH2 PHY RXER
+				MX6UL_PAD_ENET2_RX_DATA0__ENET2_RDATA00	0x1b0b0 // to ETH2 PHY RXD0
+				MX6UL_PAD_ENET2_RX_DATA1__ENET2_RDATA01	0x1b0b0 // to ETH2 PHY RXD1
+				MX6UL_PAD_ENET2_TX_EN__ENET2_TX_EN	0x1b0b0	// to ETH2 PHY TXEN
+				MX6UL_PAD_ENET2_TX_DATA0__ENET2_TDATA00	0x1b0b0 // to ETH2 PHY TXD0
+				MX6UL_PAD_ENET2_TX_DATA1__ENET2_TDATA01	0x1b0b0 // to ETH2 PHY TXD1
+				MX6UL_PAD_ENET2_TX_CLK__ENET2_REF_CLK2	0x4001b031 // to ETH2 PHY XTAL_IN
+
+				MX6UL_PAD_JTAG_MOD__GPIO1_IO10      0x1f0b0	// EN_ETH_PHY_PWR
+			>;
+		};
+
+		/******************************************************************/
+		/**** I2C (cpu) ***/
+		pinctrl_i2c1: i2c1grp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO02__I2C1_SCL 0x4001b8b0	// I2C_1_CLK
+				MX6UL_PAD_GPIO1_IO03__I2C1_SDA 0x4001b8b0 // I2C_1_DAT
+			>;
+		};
+
+		pinctrl_i2c3: i2c3grp {
+			fsl,pins = <
+				MX6UL_PAD_LCD_DATA01__I2C3_SCL 0x4001b8b0	// I2C_3_CLK
+				MX6UL_PAD_LCD_DATA00__I2C3_SDA 0x4001b8b0	// I2C_3_DAT
+			>;
+		};
+
+		/**** I2C (bit-banged gpio) ***/
+		pinctrl_i2c4_gpio: i2c4grpgpio {
+			fsl,pins = <
+				MX6UL_PAD_UART3_CTS_B__GPIO1_IO26	0x1b020	// MIKRO_I2C_DAT
+				MX6UL_PAD_UART3_RTS_B__GPIO1_IO27	0x1b020	// MIKRO_I2C_CLK
+			>;
+		};
+
+
+		/******************************************************************/
+		/**** ADC ****/
+		pinctrl_adc: adcgrp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO04__GPIO1_IO04       0x1b020   // ADC_1
+				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05       0x1b020   // ADC_2
+				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08       0x1b020   // ADC_3
+				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09       0x1b020   // ADC_4
+			>;
+		};
+
+
+		/******************************************************************/
+		/**** USDHC ****/
+		pinctrl_usdhc1: usdhc1grp {
+			fsl,pins = <
+				MX6UL_PAD_SD1_CMD__USDHC1_CMD        0x17059
+				MX6UL_PAD_SD1_CLK__USDHC1_CLK        0x10071
+				MX6UL_PAD_SD1_DATA0__USDHC1_DATA0    0x17059
+				MX6UL_PAD_SD1_DATA1__USDHC1_DATA1    0x17059
+				MX6UL_PAD_SD1_DATA2__USDHC1_DATA2    0x17059
+				MX6UL_PAD_SD1_DATA3__USDHC1_DATA3    0x17059
+			>;
+		};
+
+
+		pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
+			fsl,pins = <
+				MX6UL_PAD_SD1_CMD__USDHC1_CMD     0x170b9
+				MX6UL_PAD_SD1_CLK__USDHC1_CLK     0x100b9
+				MX6UL_PAD_SD1_DATA0__USDHC1_DATA0 0x170b9
+				MX6UL_PAD_SD1_DATA1__USDHC1_DATA1 0x170b9
+				MX6UL_PAD_SD1_DATA2__USDHC1_DATA2 0x170b9
+				MX6UL_PAD_SD1_DATA3__USDHC1_DATA3 0x170b9
+			>;
+		};
+
+		pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
+			fsl,pins = <
+				MX6UL_PAD_SD1_CMD__USDHC1_CMD     0x170f9
+				MX6UL_PAD_SD1_CLK__USDHC1_CLK     0x100f9
+				MX6UL_PAD_SD1_DATA0__USDHC1_DATA0 0x170f9
+				MX6UL_PAD_SD1_DATA1__USDHC1_DATA1 0x170f9
+				MX6UL_PAD_SD1_DATA2__USDHC1_DATA2 0x170f9
+				MX6UL_PAD_SD1_DATA3__USDHC1_DATA3 0x170f9
+			>;
+		};
+		pinctrl_usdhc2: usdhc2grp {
+			fsl,pins = <
+				MX6UL_PAD_NAND_RE_B__USDHC2_CLK     0x10069
+				MX6UL_PAD_NAND_WE_B__USDHC2_CMD     0x17059
+				MX6UL_PAD_NAND_DATA00__USDHC2_DATA0 0x17059
+				MX6UL_PAD_NAND_DATA01__USDHC2_DATA1 0x17059
+				MX6UL_PAD_NAND_DATA02__USDHC2_DATA2 0x17059
+				MX6UL_PAD_NAND_DATA03__USDHC2_DATA3 0x17059
+			>;
+		};
+
+		/******************************************************************/
+		/**** SPI (for WIFI/Bluetooth Module) ****/
+		pinctrl_ecspi3: ecspi3grp {
+			fsl,pins = <
+				MX6UL_PAD_NAND_READY_B__GPIO4_IO12  0x10b0 // SPI_3_CS#
+				MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK   0x10b0 // SPI_3_CLK
+				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x10b0 // SPI_3_MOSI
+				MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x10b0 // SPI_3_MISO
+			>;
+		};
+
+
+		/******************************************************************/
+		/**** DVFS ****/
+		pinctrl_dvfs: dvfsgrp {
+			fsl,pins = <
+				MX6UL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x79	// GPIO_DVFS
+			>;
+		};
+	};
+};
