@@ -283,7 +283,7 @@
 			compatible = "simple-bus";
 			reg = <0 0x50000000 0x00010000>;
 			#address-cells = <1>;
-			#size-cells = <2>;
+			#size-cells = <1>;
 
 			fsl,weim-cs-timing = <
 				0x0161030F	// EIM_CSnGCR1 @ 0x021b8000
@@ -295,6 +295,43 @@
 			>;
 
 		status = "okay";
+
+		fpga_uart0: serial@50000000 {
+			compatible = "ns16550";
+			current-speed = <115200>;
+			reg-shift = <0>;
+			reg-io-width = <1>;
+			reg = <0x50000000 0x100>;
+			status = "okay";
+		};
+
+		fpga_uart1: serial@50000010 {
+			compatible = "ns16550";
+			current-speed = <115200>;
+			reg-shift = <0>;
+			reg-io-width = <1>;
+			reg = <0x50000010 0x100>;
+			status = "okay";
+		};
+
+		fpga_uart2: serial@50000020 {
+			compatible = "ns16550";
+			current-speed = <115200>;
+			reg-shift = <0>;
+			reg-io-width = <1>;
+			reg = <0x50000020 0x100>;
+			status = "okay";
+		};
+
+		gpio6: fpga_gpio6@50004010 {
+			compatible = "technologic,TS7120-gpio";
+			reg = <0x50004010 0x50>;
+			gpio-controller;
+			#gpio-cells = <1>;
+			base = <160>;
+			ngpios = <12>;
+			status = "okay";
+		};
 	 };
 };
 
