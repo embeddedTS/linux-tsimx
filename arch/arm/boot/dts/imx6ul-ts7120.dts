@@ -79,15 +79,53 @@
 			states = <1300000 0x1 1400000 0x0>;
 		};
 
-		reg_sd1_vmmc: sd1_vmmc {
+		reg_emmc_vmmc: emmc_vmmc {
 			compatible = "regulator-fixed";
-			regulator-name = "EN_SD_CARD";
+			regulator-name = "EMMC_PWR";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
-			//gpio = <&gpio6 14 GPIO_ACTIVE_HIGH>;
-			// EN_SD_CARD_3.3V is driven by the FPGA, so we need a gpio driver, asap!
+			//gpio = <&gpio6 29 GPIO_ACTIVE_LOW>;	// en_emmc_3v3_padn driven by FPGA
+			//enable-active-low;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+
+		reg_can_xcvr: can_xcvr {
+			compatible = "regulator-fixed";
+			regulator-name = "CAN_PWR";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			gpio = <&gpio6 21 GPIO_ACTIVE_LOW>;	// en_can_xcvr_padn driven by FPGA
+			enable-active-low;
+		};
+
+		reg_eth_phy: eth_phy {
+			compatible = "regulator-fixed";
+			regulator-name = "ETH_PHY_PWR";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			gpio = <&gpio1 10 GPIO_ACTIVE_HIGH>;	// EN_ETH_PHY_PWR driven by CPU
 			enable-active-high;
 			regulator-always-on;
+			regulator-boot-on;
+		};
+
+		reg_usb_otg1_vbus: regulator@1 {
+			compatible = "regulator-fixed";
+			regulator-name = "usb_otg1_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+
+		reg_usb_otg2_vbus: regulator@2 {
+			compatible = "regulator-fixed";
+			regulator-name = "usb_otg2_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			regulator-always-on;
+			regulator-boot-on;
 		};
 
 		reg_adc_vref: adc_vref {
@@ -99,6 +137,27 @@
 			//enable-active-high;
 		};
 	};
+
+	i2c_gpio@0 {
+		compatible = "i2c-gpio";
+		clock-frequency = <100000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_i2c4_gpio>;
+
+		gpios = <
+			&gpio1 26 GPIO_ACTIVE_LOW /* MIKRO_I2C_DAT */
+			&gpio1 27 GPIO_ACTIVE_LOW /* MIKRO_I2C_CLK */
+			>;
+
+		status = "okay";
+		i2c-gpio,sda-open-drain;
+		i2c-gpio,scl-open-drain;
+		i2c-gpio,delay-us = <2>;	/* ~100 kHz */
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+	};
+
 };
 
 &cpu0 {
@@ -120,6 +179,7 @@
 
 
 &fec1 {
+	phy-supply = <&reg_eth_phy>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet1>;
 	phy-mode = "rmii";
@@ -128,6 +188,7 @@
 };
 
 &fec2 {
+	phy-supply = <&reg_eth_phy>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet2>;
 	phy-mode = "rmii";
@@ -151,12 +212,14 @@
 };
 
 &flexcan1 {	// Screw terminals
+	xceiver-supply = <&reg_can_xcvr>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
 	status = "okay";
 };
 
 &flexcan2 {	// COM header
+	xceiver-supply = <&reg_can_xcvr>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan2>;
 	status = "okay";
@@ -208,7 +271,7 @@
 
 
 &usbotg1 {
-	//vbus-supply = <&reg_usb_otg1_vbus>;
+	vbus-supply = <&reg_usb_otg1_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb_otg1_id>;
 	srp-disable;
@@ -218,6 +281,7 @@
 };
 
 &usbotg2 {
+	vbus-supply = <&reg_usb_otg2_vbus>;
 	dr_mode = "host";
 	disable-over-current;
 	status = "okay";
@@ -231,8 +295,8 @@
 	keep-power-in-suspend;
 	enable-sdio-wakeup;
 	bus-width = <4>;
-	vmmc-supply = <&reg_sd1_vmmc>;
-	status = "disabled";
+	vmmc-supply = <&reg_emmc_vmmc>;
+	status = "okay";
 };
 
 
@@ -241,9 +305,6 @@
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-	scl-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
-	sda-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
-
 
 	rtc: m41t00s@68 {
 		compatible = "m41t00";
@@ -259,12 +320,13 @@
 };
 
 &i2c3 {	// bus #2, Used by the cryptokey chip;  and CN99 off-board i2c
-	clock-frequency = <400000>;
+	clock-frequency = <4000>;		// ATSHA204A goes to sleep, needs slow speed
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
 
 	cryptokey: atsha204@64 {
+		/* ATSHA204A Microchip CryptoAuthentication */
 		compatible = "atsha204";
 		reg = <0x64>;	// 0xc8? Address may be programmed into the device's EEPROM
 	};
@@ -273,8 +335,8 @@
 &weim {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_weim_fpga &pinctrl_weim_cs0>;
-	#address-cells = <1>;
-	#size-cells = <2>;
+	#address-cells = <2>;
+	#size-cells = <1>;
 	clocks = <&clks IMX6UL_CLK_EIM>, <&clks IMX6UL_CLK_EIM_SLOW_SEL>;
 	ranges = <0 0 0x50000000 0x08000000>;
 	status = "okay";
@@ -284,53 +346,147 @@
 			reg = <0 0x50000000 0x00010000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
+			ranges = <0 0 0 0x10000>;
 
 			fsl,weim-cs-timing = <
 				0x0161030F	// EIM_CSnGCR1 @ 0x021b8000
 				0x00000000	// EIM_CSnGCR2 @ 0x021b8004
 				0x03000000	// EIM_CSnRCR1 @ 0x021b8008
-				0x00000077	// EIM_CSnRCR2 @ 0x021b800c
+				0x00000000	// EIM_CSnRCR2 @ 0x021b800c
 				0x01000000  // EIM_CSnWCR1 @ 0x021b8010
 				0 				// EIM_CSnWCR2	@ 0x021b8014
 			>;
 
 		status = "okay";
 
-		fpga_uart0: serial@50000000 {
-			compatible = "ns16550";
+		fpga_uart0: serial@0 {
+			compatible = "ns16550a";
+			device_type = "serial";
 			current-speed = <115200>;
-			reg-shift = <0>;
+			reg-shift = <1>;
 			reg-io-width = <1>;
-			reg = <0x50000000 0x100>;
+			reg = <0 16>;
+			clock-frequency = <16000000>;
 			status = "okay";
 		};
 
-		fpga_uart1: serial@50000010 {
-			compatible = "ns16550";
+		fpga_uart1: serial@10 {
+			compatible = "ns16550a";
+			device_type = "serial";
 			current-speed = <115200>;
-			reg-shift = <0>;
+			reg-shift = <1>;
 			reg-io-width = <1>;
-			reg = <0x50000010 0x100>;
+			reg = <0x10 16>;
+			clock-frequency = <16000000>;
 			status = "okay";
 		};
 
-		fpga_uart2: serial@50000020 {
-			compatible = "ns16550";
+		fpga_uart2: serial@20 {
+			compatible = "ns16550a";
+			device_type = "serial";
 			current-speed = <115200>;
-			reg-shift = <0>;
+			reg-shift = <1>;
 			reg-io-width = <1>;
-			reg = <0x50000020 0x100>;
+			reg = <0x20 16>;
+			clock-frequency = <16000000>;
 			status = "okay";
 		};
 
-		gpio6: fpga_gpio6@50004010 {
-			compatible = "technologic,TS7120-gpio";
-			reg = <0x50004010 0x50>;
-			gpio-controller;
-			#gpio-cells = <1>;
-			base = <160>;
-			ngpios = <12>;
+		fpga_uart3: serial@30 {
+			compatible = "ns16550a";
+			device_type = "serial";
+			current-speed = <115200>;
+			reg-shift = <1>;
+			reg-io-width = <1>;
+			reg = <0x30 16>;
+			clock-frequency = <16000000>;
 			status = "okay";
+		};
+
+		fpga_uart4: serial@40 {
+			compatible = "ns16550a";
+			device_type = "serial";
+			current-speed = <115200>;
+			reg-shift = <1>;
+			reg-io-width = <1>;
+			reg = <0x40 16>;
+			clock-frequency = <16000000>;
+			status = "okay";
+		};
+
+		fpga_uart5: serial@50 {
+			compatible = "ns16550";
+			device_type = "serial";
+			current-speed = <115200>;
+			reg-shift = <1>;
+			reg-io-width = <1>;
+			reg = <0x50 16>;
+			clock-frequency = <16000000>;
+			status = "okay";
+		};
+
+		fpga_uart6: serial@60 {
+			compatible = "ns16550";
+			device_type = "serial";
+			current-speed = <115200>;
+			reg-shift = <1>;
+			reg-io-width = <1>;
+			reg = <0x60 16>;
+			clock-frequency = <16000000>;
+			status = "okay";
+		};
+
+		fpga_uart7: serial@70 {
+			compatible = "ns16550";
+			device_type = "serial";
+			current-speed = <115200>;
+			reg-shift = <1>;
+			reg-io-width = <1>;
+			reg = <0x70 16>;
+			clock-frequency = <16000000>;
+			status = "okay";
+		};
+
+		fpga_uart8: serial@80 {
+			compatible = "ns16550";
+			device_type = "serial";
+			current-speed = <115200>;
+			reg-shift = <1>;
+			reg-io-width = <1>;
+			reg = <0x80 16>;
+			clock-frequency = <16000000>;
+			status = "okay";
+		};
+
+		tssdcard: tssdcard1@200 { /* drivers/mmc/host/tssdcard.c */
+			compatible = "technologicsystems,tssdcard";
+			#address-cells = <0x2>;
+			#size-cells = <0x2>;
+			/* driver requires access to 0x200 for the core, and also to syscon */
+			reg = <0x200 0x200 0x4000 0x200>;
+			tssdcard,ndevices = <1>;
+			tssdcard,poll_rate = <1>;
+			tssdcard,disable_poll = <0>;
+			status = "okay";
+		};
+
+		syscon: syscon@4000 {
+			compatible = "simple-bus";
+			#address-cells = <0x2>;
+			#size-cells = <0x1>;
+			reg = <0x4000 0x50>;
+			ranges = <0 0 0x4000 0x50>;
+			status = "okay";
+
+			gpio6: fpga_gpio6@10 { /* drivers/gpio/gpio-ts7120.c */
+				compatible = "technologic,TS7120-gpio";
+				reg = <0 0 0x50>;
+				gpio-controller;
+				#gpio-cells = <2>;
+				base = <160>;
+				ngpios = <32>;
+				status = "okay";
+			};
 		};
 	 };
 };
@@ -513,7 +669,7 @@
 
 
 		/******************************************************************/
-		/**** USDHC ****/
+		/**** USDHC (eMMC) ****/
 		pinctrl_usdhc1: usdhc1grp {
 			fsl,pins = <
 				MX6UL_PAD_SD1_CMD__USDHC1_CMD        0x17059
@@ -572,18 +728,18 @@
 
 		pinctrl_weim_cs0: weimcs0grp {
 			fsl,pins = <
-			//MX6UL_PAD_CSI_MCLK__GPIO4_IO17 	0x1b020			//  EIM_CS0
-				MX6UL_PAD_CSI_MCLK__EIM_CS0_B		0xb029
+				MX6UL_PAD_CSI_MCLK__GPIO4_IO17 	0xb029			//  EIM_CS0
+			//	MX6UL_PAD_CSI_MCLK__EIM_CS0_B		0xb029
 			>;
 		};
 
 		pinctrl_weim_fpga: weimfpgagrp {
 			fsl,pins = <
-				MX6UL_PAD_CSI_PIXCLK__EIM_OE		0xb029			// EIM_OE#
-				MX6UL_PAD_CSI_VSYNC__EIM_RW		0xb029			// EIM_WE#
+				MX6UL_PAD_CSI_PIXCLK__EIM_OE			0xb029		// EIM_OE#
+				MX6UL_PAD_CSI_VSYNC__EIM_RW			0xb029		// EIM_WE#
 				MX6UL_PAD_CSI_HSYNC__EIM_LBA_B		0xb029		// EIM_LBA#
 				MX6UL_PAD_NAND_ALE__GPIO4_IO10		0xb029		// EIM_IRQ
-				MX6UL_PAD_NAND_DQS__EIM_WAIT				0xb029	// EIM_WAIT
+				MX6UL_PAD_NAND_DQS__EIM_WAIT			0xb029		// EIM_WAIT
 				MX6UL_PAD_NAND_WP_B__EIM_BCLK			0xb029		// EIM_BCLK
 
 				MX6UL_PAD_NAND_DATA07__EIM_AD15		0xb029		// EIM_AD_15

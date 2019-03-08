@@ -511,7 +511,8 @@ config GPIO_ZYNQ
 	  Say yes here to support Xilinx Zynq GPIO controller.
 
 config GPIO_TS7120
-	tristate "Technologic Systems FPGA I2C GPIO"
+	bool "Technologic Systems FPGA GPIO"
+	depends on IMX_WEIM
 	help
 	  Say yes here to enabled the GPIO driver for Technologic's FPGA core.
 	  Supports TS-7120 only.  It requires the driver to be built in the

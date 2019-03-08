@@ -17,16 +17,24 @@
 #include <linux/of_device.h>
 #include <linux/spinlock.h>
 #include <linux/module.h>
+#include <linux/delay.h>
 
-#define TS7120_NR_DIO	 	12
+#define TS7120_NR_DIO	 	32
 #define TS7120_DIO_BASE  	160
-#define SYSCON_ADDRESS		0x50004000
-#define SYSCON_SIZE 			0x50
-#define OUTPUT_SET_REG 0x10
-#define OUTPUT_GET_REG 0x10
-#define OUTPUT_ENABLE_SET_REG 0x12
-#define OUTPUT_CLR_REG 0x14
-#define OUTPUT_ENABLE_CLR_REG 0x16
+
+/* Register offsets from the 'reg' value in device-tree */
+#define BANK_0_OUTPUT_SET_REG 0x10
+#define BANK_0_OUTPUT_GET_REG 0x10
+#define BANK_0_OUTPUT_ENABLE_SET_REG 0x12
+#define BANK_0_OUTPUT_CLR_REG 0x14
+#define BANK_0_OUTPUT_ENABLE_CLR_REG 0x16
+
+#define BANK_1_OUTPUT_SET_REG 0x40
+#define BANK_1_OUTPUT_GET_REG 0x40
+#define BANK_1_OUTPUT_ENABLE_SET_REG 0x42
+#define BANK_1_OUTPUT_CLR_REG 0x44
+#define BANK_1_OUTPUT_ENABLE_CLR_REG 0x46
+
 
 struct TS7120_gpio_priv {
 	void __iomem  *syscon;
@@ -40,28 +48,60 @@ struct TS7120_gpio_priv {
 /*
 	DIO controlled by the FPGA on the TS-7120:
 
+	Bank 0:
 		Header HD20...
-		Pin 2 DIO_2
-		Pin 4 DIO_4
-		Pin 5 DIO_5
-		.
-		.
-		Pin 15 DIO_15
+			Pin 2 DIO_2							GPIO BASE + 0
+			Pin 4 DIO_4							GPIO BASE + 1
+			Pin 5 DIO_5							GPIO BASE + 2
+			Pin 6 DIO_6							GPIO BASE + 3
+			Pin 7 DIO_7							GPIO BASE + 4
+			Pin 8 DIO_8							GPIO BASE + 5
+			Pin 9 DIO_9							GPIO BASE + 6
+			Pin 10 DIO_10						GPIO BASE + 7
+			Pin 11 DIO_11						GPIO BASE + 8
+			Pin 12 DIO_12						GPIO BASE + 9
+			Pin 13 DIO_13						GPIO BASE + 10
+			Pin 14 DIO_14						GPIO BASE + 11
+		Silab Programming Clock				GPIO BASE + 12
+		Silab Programming Data				GPIO BASE + 13
+		Enable Blue LED						GPIO BASE + 14
+		Syetem Reset#							GPIO BASE + 15
 
-	There's no DIO_0, DIO_1 or DIO_3 on this header, so that makes 13 total.
-	This driver will accept only those DIO numbers that have a pin on the header.
+	Bank 1:
+		Mikro Reset#							GPIO BASE + 16
+		Enable Digital IN 0 & 1				GPIO BASE + 17
+		Enable AN_5V							GPIO BASE + 18
+		Enable PoE								GPIO BASE + 19
+		Enable Nimbel 3.3V					GPIO BASE + 20
+		Enable CAN Transceiver				GPIO BASE + 21
+		Enable Digital IN 2 & 3				GPIO BASE + 22
+		Enable HS SW							GPIO BASE + 23
+		Enable XBEE USB						GPIO BASE + 24
+		Enable LS OUT 0						GPIO BASE + 25
+		Enable WiFi Power						GPIO BASE + 26
+		Enable Nimbel 4V						GPIO BASE + 27
+		Enable GPS 3.3V						GPIO BASE + 28
+		Enable eMMC 3.3V#						GPIO BASE + 29
+		Enable LS OUT 1						GPIO BASE + 30
+		Enable WiFi Reset#					GPIO BASE + 31
 
-	DIO is controlled by four 16-bit registers in the FPGA Syscon:
+	DIO is controlled by eight 16-bit registers in the FPGA Syscon:
 
+	Bank 0:
 		Offset 0x10:  Data Set (write) or Pin State (read)
 		Offset 0x12:  Output Enable Set
 		Offset 0x14:  Data Clear
 		Offset 0x16:  Output Enable Clear
 
+	Bank 1:
+		Offset 0x40:  Data Set (write) or Pin State (read)
+		Offset 0x42:  Output Enable Set
+		Offset 0x44:  Data Clear
+		Offset 0x46:  Output Enable Clear
 
 */
 
-#define IS_VALID_OFFSET(x) ((x) < 12)
+#define IS_VALID_OFFSET(x) ((x) < TS7120_NR_DIO)
 
 static inline struct TS7120_gpio_priv *to_gpio_TS7120(struct gpio_chip *chip)
 {
@@ -94,7 +134,6 @@ static int TS7120_gpio_direction_input(struct gpio_chip *chip,
 						 unsigned int offset)
 {
 	struct TS7120_gpio_priv *priv = to_gpio_TS7120(chip);
-//	unsigned int reg; //, bit;
 	unsigned long flags;
 
 	if (priv == NULL) {
@@ -114,7 +153,10 @@ static int TS7120_gpio_direction_input(struct gpio_chip *chip,
 
 	priv->direction[offset / 32] |= (1 << offset % 32);
 
-	writew((1 << offset), priv->syscon + OUTPUT_ENABLE_CLR_REG);
+	if (offset < 16)
+		writew((1 << offset), priv->syscon + BANK_0_OUTPUT_ENABLE_CLR_REG);
+	else
+		writew((1 << (offset-16)), priv->syscon + BANK_1_OUTPUT_ENABLE_CLR_REG);
 
 	spin_unlock_irqrestore(&priv->lock, flags);
 
@@ -145,12 +187,22 @@ static int TS7120_gpio_direction_output(struct gpio_chip *chip,
 
 	spin_lock_irqsave(&priv->lock, flags);
 
-	writew((1 << offset), priv->syscon + OUTPUT_ENABLE_SET_REG);
+	if (offset < 16) {
+		writew((1 << offset), priv->syscon + BANK_0_OUTPUT_ENABLE_SET_REG);
 
-	if (value)
-		writew((1 << offset), priv->syscon + OUTPUT_SET_REG);
-	else
-		writew((1 << offset), priv->syscon + OUTPUT_CLR_REG);
+		if (value)
+			writew((1 << offset), priv->syscon + BANK_0_OUTPUT_SET_REG);
+		else
+			writew((1 << offset), priv->syscon + BANK_0_OUTPUT_CLR_REG);
+	} else {
+
+		writew((1 << (offset-16)), priv->syscon + BANK_1_OUTPUT_ENABLE_SET_REG);
+
+		if (value)
+			writew((1 << (offset-16)), priv->syscon + BANK_1_OUTPUT_SET_REG);
+		else
+			writew((1 << (offset-16)), priv->syscon + BANK_1_OUTPUT_CLR_REG);
+	}
 
 	priv->direction[offset / 32] &= ~(1 << offset % 32);
 	spin_unlock_irqrestore(&priv->lock, flags);
@@ -176,9 +228,13 @@ static int TS7120_gpio_get(struct gpio_chip *chip, unsigned int offset)
 		  return -1;
 	}
 
-	reg = readw(priv->syscon + 0x10);
-
-	return !!(reg & (1 << offset));
+	if (offset < 16) {
+		reg = readw(priv->syscon + BANK_0_OUTPUT_GET_REG);
+		return !!(reg & (1 << offset));
+	} else {
+		reg = readw(priv->syscon + BANK_1_OUTPUT_GET_REG);
+		return !!(reg & (1 << (offset-16)));
+	}
 
 }
 
@@ -207,13 +263,21 @@ static void TS7120_gpio_set(struct gpio_chip *chip, unsigned int offset,
 
 	spin_lock_irqsave(&priv->lock, flags);
 
-	if (value)
-		writew((1 << offset), priv->syscon + OUTPUT_SET_REG);
-	else
-		writew((1 << offset), priv->syscon + OUTPUT_CLR_REG);
+	if (offset < 16) {
+		if (value)
+			writew((1 << offset), priv->syscon + BANK_0_OUTPUT_SET_REG);
+		else
+			writew((1 << offset), priv->syscon + BANK_0_OUTPUT_CLR_REG);
+	} else {
+		if (value)
+			writew((1 << (offset-16)), priv->syscon + BANK_1_OUTPUT_SET_REG);
+		else
+			writew((1 << (offset-16)), priv->syscon + BANK_1_OUTPUT_CLR_REG);
+	}
 
 	spin_unlock_irqrestore(&priv->lock, flags);
 
+	printk("%s done\n", __func__);
 }
 
 
@@ -243,10 +307,11 @@ static int TS7120_gpio_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	const struct of_device_id *match;
 	struct TS7120_gpio_priv *priv;
-	u32 ngpio, reg;
+	u32 ngpio;
 	int base;
 	int ret;
 	void __iomem  *membase;
+	struct resource *res = 0;
 
 	match = of_match_device(TS7120_gpio_of_match_table, dev);
 	if (!match)
@@ -258,13 +323,20 @@ static int TS7120_gpio_probe(struct platform_device *pdev)
 	if (of_property_read_u32(dev->of_node, "base", &base))
 		base = TS7120_DIO_BASE;
 
-	membase = devm_ioremap(dev, SYSCON_ADDRESS, SYSCON_SIZE);
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+
+	if (res == NULL) {
+		pr_err("Can't get device address\n");
+		return -EFAULT;
+	}
+
+	membase =  devm_ioremap_nocache(&pdev->dev, res->start,
+					  resource_size(res));
 
 	if (IS_ERR(membase)) {
 		pr_err("Could not map resource\n");
 		return -ENOMEM;;
 	}
-
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -272,14 +344,14 @@ static int TS7120_gpio_probe(struct platform_device *pdev)
 
 	priv->syscon = membase;
 
-	reg = readl(priv->syscon);
-	printk("FPGA: 0x%08X\n", reg);
+	pr_info("FPGA syscon mapped to 0x%08X, %d bytes\n", (unsigned int)priv->syscon, resource_size(res));
 
 	memset(priv->direction, 0xFF, sizeof(priv->direction));
 	memset(priv->ovalue, 0, sizeof(priv->ovalue));
 	/* Set all the DIO to inputs */
 
-	writew(0xffff, priv->syscon + OUTPUT_ENABLE_CLR_REG);
+	writew(0xffff, priv->syscon + BANK_0_OUTPUT_ENABLE_CLR_REG);
+	writew(0xffff, priv->syscon + BANK_1_OUTPUT_ENABLE_CLR_REG);
 
 	spin_lock_init(&priv->lock);
 	priv->gpio_chip = template_chip;
@@ -288,13 +360,17 @@ static int TS7120_gpio_probe(struct platform_device *pdev)
 	priv->gpio_chip.base = base;
 	pdev->dev.platform_data = &priv;
 
-	platform_set_drvdata(pdev, priv);
+#ifdef CONFIG_OF_GPIO
+	priv->gpio_chip.of_node = pdev->dev.of_node;
+#endif
 
 	ret = gpiochip_add(&priv->gpio_chip);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Unable to register gpiochip\n");
 		return ret;
 	}
+
+	platform_set_drvdata(pdev, priv);
 
 	return 0;
 }
