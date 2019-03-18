@@ -117,7 +117,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 			break;
 		case 4:
 			port->iotype = of_device_is_big_endian(np) ?
-				       UPIO_MEM32BE : UPIO_MEM32;
+						 UPIO_MEM32BE : UPIO_MEM32;
 			break;
 		default:
 			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
@@ -183,7 +183,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
 		goto out;
 
 	switch (port_type) {
-#ifdef CONFIG_SERIAL_8250
+#if defined(CONFIG_SERIAL_8250) || defined(CONFIG_SERIAL_8250_MODULE)
 	case PORT_8250 ... PORT_MAX_8250:
 	{
 		struct uart_8250_port port8250;
@@ -234,7 +234,7 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
 {
 	struct of_serial_info *info = platform_get_drvdata(ofdev);
 	switch (info->type) {
-#ifdef CONFIG_SERIAL_8250
+#if defined(CONFIG_SERIAL_8250) || defined(CONFIG_SERIAL_8250_MODULE)
 	case PORT_8250 ... PORT_MAX_8250:
 		serial8250_unregister_port(info->line);
 		break;
@@ -256,7 +256,7 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
-#ifdef CONFIG_SERIAL_8250
+#if defined(CONFIG_SERIAL_8250) || defined(CONFIG_SERIAL_8250_MODULE)
 static void of_serial_suspend_8250(struct of_serial_info *info)
 {
 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);

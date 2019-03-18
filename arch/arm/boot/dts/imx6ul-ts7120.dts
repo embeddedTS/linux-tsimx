@@ -8,6 +8,7 @@
 
 /dts-v1/;
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
 #include "imx6ul.dtsi"
 
 / {
@@ -158,6 +159,7 @@
 
 	};
 
+
 };
 
 &cpu0 {
@@ -165,17 +167,6 @@
 	soc-supply = <&reg_soc>;
 	dc-supply = <&reg_gpio_dvfs>;
 };
-
-&ecspi3 {
-	fsl,spi-num-chipselects = <3>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_ecspi3>;
-	status = "okay";
-
-
-
-};
-
 
 
 &fec1 {
@@ -366,7 +357,9 @@
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <0>;
 			status = "okay";
 		};
 
@@ -377,7 +370,9 @@
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x10 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <1>;
 			status = "okay";
 		};
 
@@ -388,7 +383,9 @@
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x20 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <2>;
 			status = "okay";
 		};
 
@@ -399,63 +396,74 @@
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x30 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <3>;
 			status = "okay";
 		};
 
-		fpga_uart4: serial@40 {
+		fpga_uart4: serial@40 {  // RS485 (on CN32)
 			compatible = "ns16550a";
 			device_type = "serial";
 			current-speed = <115200>;
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x40 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <4>;
 			status = "okay";
 		};
 
-		fpga_uart5: serial@50 {
+		fpga_uart5: serial@50 {	// DMX 485
 			compatible = "ns16550";
 			device_type = "serial";
 			current-speed = <115200>;
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x50 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <5>;
 			status = "okay";
 		};
 
-		fpga_uart6: serial@60 {
+		fpga_uart6: serial@60 {	// WIFI
 			compatible = "ns16550";
 			device_type = "serial";
 			current-speed = <115200>;
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x60 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <6>;
 			status = "okay";
 		};
 
-		fpga_uart7: serial@70 {
+		fpga_uart7: serial@70 {	// XBEE
 			compatible = "ns16550";
 			device_type = "serial";
 			current-speed = <115200>;
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x70 16>;
-			clock-frequency = <16000000>;
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <7>;
 			status = "okay";
 		};
 
-		fpga_uart8: serial@80 {
+		fpga_uart8: serial@80 {	// GPS
 			compatible = "ns16550";
 			device_type = "serial";
 			current-speed = <115200>;
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x80 16>;
-			clock-frequency = <16000000>;
-			status = "okay";
+			clock-frequency = <1843200>;
+			interrupt-parent = <&fpga_int>;
+			interrupts = <8>;
 		};
 
 		tssdcard: tssdcard1@200 { /* drivers/mmc/host/tssdcard.c */
@@ -485,10 +493,31 @@
 				#gpio-cells = <2>;
 				base = <160>;
 				ngpios = <32>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
 				status = "okay";
 			};
+
+			fpga_int: 	fpga_int@0 {
+				compatible = "technologic,TS7120-intc";
+
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				reg = <0 0 0x50>;
+
+				interrupt-parent = <&gpio5>;
+				interrupts = <1 IRQ_TYPE_EDGE_RISING>;
+				status = "okay";
+			};
+
 		};
+
+
+
+
 	 };
+
+
 };
 
 &snvs_poweroff {
@@ -500,12 +529,32 @@
 };
 
 
+
 &adc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_adc>;
 	vref-supply = <&reg_adc_vref>;
 	num-channels = <10>;
 	status = "okay";
+};
+
+&ecspi3 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio4 12 0>;		// SPI_3_CS#
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi3>;
+	status = "okay";
+
+	wilc_spi@0 {
+		compatible = "atmel,wilc_spi";
+		reg = <0>;
+		spi-max-frequency = <24000000>;
+		wilc3000,reset-gpios = <&gpio6 31 0>;     /* RESET, via fpga  */
+		wilc3000,chip-en-gpios = <&gpio6 26 0>;   /* Power enable via fpga */
+		interrupt-parent = <&fpga_int>;
+		interrupts = <15>;
+		status = "okay";
+	 };
 };
 
 
@@ -517,7 +566,7 @@
 			fsl,pins = <
 
 			MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x11020 // POWER_FAIL_3V
-			MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x1b020 // FPGA_IRQ
+			MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x13020 // FPGA_IRQ
 			/* TAMPER2 is N/C on TS-7120 */
 			/* TAMPER3 is GPIO_DVFS, see below */
 			MX6UL_PAD_SNVS_TAMPER4__GPIO5_IO04	0x1b020 // EN_RELAY_1 (gpio132)
@@ -713,6 +762,7 @@
 				MX6UL_PAD_NAND_CE0_B__ECSPI3_SCLK   0x10b0 // SPI_3_CLK
 				MX6UL_PAD_NAND_CE1_B__ECSPI3_MOSI   0x10b0 // SPI_3_MOSI
 				MX6UL_PAD_NAND_CLE__ECSPI3_MISO     0x10b0 // SPI_3_MISO
+				// Note: WiFi IRQ goes to the FPGA
 			>;
 		};
 
