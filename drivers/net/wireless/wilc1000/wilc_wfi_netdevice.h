@@ -178,6 +178,7 @@ struct wilc {
 	int gpio;
 	bool initialized;
 	int dev_irq_num;
+	int irq_is_gpio;
 	int close;
 	u8 vif_num;
 	struct wilc_vif *vif[NUM_CONCURRENT_IFC];
@@ -197,7 +198,7 @@ struct wilc {
 	struct completion debug_thread_started;
 	struct task_struct *txq_thread;
 	struct task_struct *debug_thread;
-	
+
 	int quit;
 	int cfg_frame_in_use;
 	struct wilc_cfg_frame cfg_frame;
@@ -246,7 +247,7 @@ void wilc_mac_indicate(struct wilc *wilc, int flag);
 int wilc_lock_timeout(struct wilc *wilc, void *, u32 timeout);
 void wilc_netdev_cleanup(struct wilc *wilc);
 int wilc_netdev_init(struct wilc **wilc, struct device *, int io_type, int gpio,
-		     const struct wilc_hif_func *ops);
+			  const struct wilc_hif_func *ops);
 void wilc_wlan_deinitialize(struct net_device *dev);
 void WILC_WFI_mgmt_rx(struct wilc *wilc, u8 *buff, u32 size);
 int wilc_wlan_get_firmware(struct net_device *dev);

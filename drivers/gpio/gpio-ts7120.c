@@ -277,7 +277,6 @@ static void TS7120_gpio_set(struct gpio_chip *chip, unsigned int offset,
 
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-	printk("%s done\n", __func__);
 }
 
 

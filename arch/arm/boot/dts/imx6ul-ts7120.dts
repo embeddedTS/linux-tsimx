@@ -358,7 +358,7 @@
 			reg-io-width = <1>;
 			reg = <0 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <0>;
 			status = "okay";
 		};
@@ -371,7 +371,7 @@
 			reg-io-width = <1>;
 			reg = <0x10 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <1>;
 			status = "okay";
 		};
@@ -384,7 +384,7 @@
 			reg-io-width = <1>;
 			reg = <0x20 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <2>;
 			status = "okay";
 		};
@@ -397,7 +397,7 @@
 			reg-io-width = <1>;
 			reg = <0x30 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <3>;
 			status = "okay";
 		};
@@ -410,7 +410,7 @@
 			reg-io-width = <1>;
 			reg = <0x40 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <4>;
 			status = "okay";
 		};
@@ -423,7 +423,7 @@
 			reg-io-width = <1>;
 			reg = <0x50 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <5>;
 			status = "okay";
 		};
@@ -436,7 +436,7 @@
 			reg-io-width = <1>;
 			reg = <0x60 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <6>;
 			status = "okay";
 		};
@@ -449,7 +449,7 @@
 			reg-io-width = <1>;
 			reg = <0x70 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <7>;
 			status = "okay";
 		};
@@ -462,7 +462,7 @@
 			reg-io-width = <1>;
 			reg = <0x80 16>;
 			clock-frequency = <1843200>;
-			interrupt-parent = <&fpga_int>;
+			interrupt-parent = <&fpga_intc>;
 			interrupts = <8>;
 		};
 
@@ -498,7 +498,7 @@
 				status = "okay";
 			};
 
-			fpga_int: 	fpga_int@0 {
+			fpga_intc: 	fpga_intc@0 { /* drivers/misc/ts-fpga/ts7120-intc.c */
 				compatible = "technologic,TS7120-intc";
 
 				interrupt-controller;
@@ -549,10 +549,11 @@
 		compatible = "atmel,wilc_spi";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
-		wilc3000,reset-gpios = <&gpio6 31 0>;     /* RESET, via fpga  */
-		wilc3000,chip-en-gpios = <&gpio6 26 0>;   /* Power enable via fpga */
-		interrupt-parent = <&fpga_int>;
+		wilc3000,reset-gpios = <&gpio6 31 GPIO_ACTIVE_LOW>;    /* RESET#, via fpga  */
+		wilc3000,chip-en-gpios = <&gpio6 26 GPIO_ACTIVE_HIGH>;   /* Power enable via fpga */
+		interrupt-parent = <&fpga_intc>;
 		interrupts = <15>;
+
 		status = "okay";
 	 };
 };

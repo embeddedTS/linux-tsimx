@@ -1739,7 +1739,7 @@ static void reset_common(struct sdcore *sd) {
 
 	// gratuitous clocks
 	SDPOKE8(sd, SDGPIO, 0xff);
-	sd->os_delay(sd->os_arg, 5000);
+	sd->os_delay(sd->os_arg, 25000);
 	for (i = 0; i < 750; i++) {
 		SDPOKE8(sd, SDGPIO, 0xff);
 		SDPEEK8(sd, SDGPIO); /* delay */
