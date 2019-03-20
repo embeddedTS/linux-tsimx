@@ -350,6 +350,18 @@
 
 		status = "okay";
 
+		clocks {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges;
+
+			fpga_clk_99MHz: fpga_clk_99MHz {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <99000000>;
+			};
+		};
+
 		fpga_uart0: serial@0 {
 			compatible = "ns16550a";
 			device_type = "serial";
@@ -478,6 +490,55 @@
 			status = "okay";
 		};
 
+		opencores_spi0: opencores_spi@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "opencores,spi-oc";
+			reg = <0x100 32>;
+			interrupt-parent = <&fpga_intc>;
+			interrupts = <9>;
+			clocks = <&fpga_clk_99MHz>;
+			clock-names = "spi-oc-clk";
+			opencores-spi,idx = <0>;
+
+			/* This is actually the FRAM, which is compatible with
+				the AT25 SPI EEPROM */
+			eeprom: at25@0 {
+				compatible = "atmel,at25";
+				at25,byte-len = <2048>;
+				at25,addr-mode = <2>;
+				at25,page-size = <32>;
+				reg = <0>;
+				spi-max-frequency = <1000000>;
+				status = "okay";
+			};
+		};
+
+		opencores_spi1: opencores_spi@1 {
+			compatible = "opencores,spi-oc";
+			reg = <0x120 32>;
+			interrupt-parent = <&fpga_intc>;
+			interrupts = <10>;
+			clocks = <&fpga_clk_99MHz>;
+			clock-names = "spi-oc-clk";
+			opencores-spi,idx = <1>;
+
+			/* Daughter-card SPI */
+		};
+
+		opencores_spi2: opencores_spi@2 {
+			compatible = "opencores,spi-oc";
+			reg = <0x140 32>;
+			interrupt-parent = <&fpga_intc>;
+			interrupts = <11>;
+			clocks = <&fpga_clk_99MHz>;
+			clock-names = "spi-oc-clk";
+			opencores-spi,idx = <2>;
+
+			/* Mikrobus Socket */
+		};
+
+
 		syscon: syscon@4000 {
 			compatible = "simple-bus";
 			#address-cells = <0x2>;
@@ -511,7 +572,6 @@
 			};
 
 		};
-
 
 
 
