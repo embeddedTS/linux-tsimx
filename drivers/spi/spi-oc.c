@@ -379,11 +379,17 @@ static int  spioc_probe(struct platform_device *pdev)
 	struct spioc *spioc = NULL;
 	struct device_node *node = pdev->dev.of_node;
 	char buf[16];
-	u32 idx;
+	u32 idx, num_chipselect;
 
 	if (of_property_read_u32(node, "opencores-spi,idx", &idx) < 0) {
-		dev_err(&pdev->dev, "Node idx not defined, assuming 0\n");
+		dev_warn(&pdev->dev, "Node idx not defined, assuming 0\n");
 		idx = 0;
+	}
+
+	if (of_property_read_u32(node, "opencores-spi,num-chipselects",
+			&num_chipselect) < 0) {
+		dev_warn(&pdev->dev, "Node num_chipselect not defined, assuming 1\n");
+		num_chipselect = 1;
 	}
 
 	master = spi_alloc_master(&pdev->dev, sizeof(struct spioc));
@@ -422,7 +428,7 @@ static int  spioc_probe(struct platform_device *pdev)
 	master->cleanup = spioc_cleanup;
 	master->dev.of_node = pdev->dev.of_node;
 	master->bus_num = pdev->id;
-	master->num_chipselect = 1;
+	master->num_chipselect = num_chipselect;
 
 	spioc->master = master;
 	spioc->pdev = pdev;
@@ -434,12 +440,12 @@ static int  spioc_probe(struct platform_device *pdev)
 	spioc->message = NULL;
 	spioc->transfer = NULL;
 	spioc->bus_num = pdev->id;
-	spioc->num_chipselect = 1;
+	spioc->num_chipselect = num_chipselect;
 	spioc->nx = 0;
 
 	spioc->clk = devm_clk_get(&pdev->dev, "spi-oc-clk");
 	if (IS_ERR(spioc->clk)) {
-		dev_err(&master->dev, "unable to get SPI master clock\n");
+		dev_err(&pdev->dev, "unable to get SPI master clock\n");
 		retval = PTR_ERR(spioc->clk);
 		spioc->clk = NULL;
 		goto err1;
@@ -447,13 +453,13 @@ static int  spioc_probe(struct platform_device *pdev)
 
 	retval = init_queue(master, buf);
 	if (retval) {
-		dev_err(&master->dev, "unable to initialize workqueue\n");
+		dev_err(&pdev->dev, "unable to initialize workqueue\n");
 		goto free;
 	}
 
 	retval = start_queue(master);
 	if (retval) {
-		dev_err(&master->dev, "unable to start workqueue\n");
+		dev_err(&pdev->dev, "unable to start workqueue\n");
 		goto free;
 	}
 
@@ -467,9 +473,6 @@ static int  spioc_probe(struct platform_device *pdev)
 
 	dev_info(&pdev->dev, "IRQ: %d, CLK: %ldHz\n",
 		irq, clk_get_rate(spioc->clk));
-
-
-	master->num_chipselect = 1;
 
 	retval = devm_spi_register_master(&pdev->dev, master);
 	if (retval) {
