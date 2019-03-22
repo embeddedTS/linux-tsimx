@@ -500,6 +500,7 @@
 			clocks = <&fpga_clk_99MHz>;
 			clock-names = "spi-oc-clk";
 			opencores-spi,idx = <0>;
+			opencores-spi,num-chipselects = <1>;
 
 			/* This is actually the FRAM, which is compatible with
 				the AT25 SPI EEPROM */
@@ -522,11 +523,14 @@
 			clocks = <&fpga_clk_99MHz>;
 			clock-names = "spi-oc-clk";
 			opencores-spi,idx = <1>;
+			opencores-spi,num-chipselects = <1>;
 
 			/* Daughter-card SPI */
 		};
 
 		opencores_spi2: opencores_spi@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
 			compatible = "opencores,spi-oc";
 			reg = <0x140 32>;
 			interrupt-parent = <&fpga_intc>;
@@ -534,8 +538,28 @@
 			clocks = <&fpga_clk_99MHz>;
 			clock-names = "spi-oc-clk";
 			opencores-spi,idx = <2>;
+			opencores-spi,num-chipselects = <1>;
 
 			/* Mikrobus Socket */
+			/* Example:  An SPI SSD1306 OLED display may be attached to the
+				Mikrobus socket, using the following configuration
+
+			ssd1306: ssd1306@0 {
+				compatible = "solomon,ssd1306fb-spi";
+				reg = <0>;
+				spi-max-frequency = <1000000>;
+				reset-gpios = <&gpio6 10 0>;		// DIO_13
+				datcmd-gpios = <&gpio6 11 0>;		// DIO_14
+				solomon,height = <64>;
+				solomon,width = <128>;
+				solomon,page-offset = <0>;
+				solomon,com-invdir;
+				solomon,com-offset = <0>;
+				solomon,prechargep1 = <1>;
+				solomon,prechargep2 = <0xF>;
+				status = "okay";
+			};
+			*/
 		};
 
 
@@ -572,8 +596,6 @@
 			};
 
 		};
-
-
 
 	 };
 
