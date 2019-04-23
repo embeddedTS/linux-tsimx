@@ -146,8 +146,8 @@
 		pinctrl-0 = <&pinctrl_i2c4_gpio>;
 
 		gpios = <
-			&gpio1 26 GPIO_ACTIVE_LOW /* MIKRO_I2C_DAT */
-			&gpio1 27 GPIO_ACTIVE_LOW /* MIKRO_I2C_CLK */
+			&gpio1 26 GPIO_ACTIVE_HIGH /* MIKRO_I2C_DAT */
+			&gpio1 27 GPIO_ACTIVE_HIGH /* MIKRO_I2C_CLK */
 			>;
 
 		status = "okay";
@@ -156,6 +156,24 @@
 		i2c-gpio,delay-us = <2>;	/* ~100 kHz */
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		/** Example:  An i2c SSD1306 OLED display may be attached to the
+				Mikrobus socket, or to HD20, using the following configuration...
+
+		 ssd1306: oled@3c {
+			compatible = "solomon,ssd1306fb-i2c";
+			reg = <0x3c>;
+			reset-gpios = <&gpio6 10 0>;		// DIO_13
+			solomon,height = <64>;
+			solomon,width = <128>;
+			solomon,page-offset = <0>;
+			solomon,com-invdir;
+			solomon,com-offset = <0>;
+			solomon,prechargep1 = <1>;
+			solomon,prechargep2 = <0xF>;
+			status = "okay";
+		};
+		*/
 
 	};
 
@@ -311,7 +329,7 @@
 };
 
 &i2c3 {	// bus #2, Used by the cryptokey chip;  and CN99 off-board i2c
-	clock-frequency = <4000>;		// ATSHA204A goes to sleep, needs slow speed
+	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
@@ -319,7 +337,8 @@
 	cryptokey: atsha204@64 {
 		/* ATSHA204A Microchip CryptoAuthentication */
 		compatible = "atsha204";
-		reg = <0x64>;	// 0xc8? Address may be programmed into the device's EEPROM
+		reg = <0x64>;	// a different address may be programmed into
+							// the device's EEPROM
 	};
 };
 
@@ -440,14 +459,14 @@
 			status = "okay";
 		};
 
-		fpga_uart6: serial@60 {	// WIFI
+		fpga_uart6: serial@60 {	// WIFI/Bluetooth
 			compatible = "ns16550";
 			device_type = "serial";
 			current-speed = <115200>;
 			reg-shift = <1>;
 			reg-io-width = <1>;
 			reg = <0x60 16>;
-			clock-frequency = <1843200>;
+			clock-frequency = <14745600>;
 			interrupt-parent = <&fpga_intc>;
 			interrupts = <6>;
 			status = "okay";
@@ -541,13 +560,13 @@
 			opencores-spi,num-chipselects = <1>;
 
 			/* Mikrobus Socket */
-			/* Example:  An SPI SSD1306 OLED display may be attached to the
-				Mikrobus socket, using the following configuration
+			/** Example:  An SPI SSD1306 OLED display may be attached to the
+				Mikrobus socket, using the following configuration...
 
 			ssd1306: ssd1306@0 {
 				compatible = "solomon,ssd1306fb-spi";
 				reg = <0>;
-				spi-max-frequency = <1000000>;
+				spi-max-frequency = <10000000>;
 				reset-gpios = <&gpio6 10 0>;		// DIO_13
 				datcmd-gpios = <&gpio6 11 0>;		// DIO_14
 				solomon,height = <64>;
@@ -582,6 +601,15 @@
 				#interrupt-cells = <1>;
 				status = "okay";
 			};
+
+			micro_pwm: micro_pwm@3c { /* drivers/pwm/pwm-ts71xx.c */
+				compatible = "technologic,ts7120-pwm";
+				reg = <0x3c 0 4>;
+				clocks = <&fpga_clk_99MHz>;
+				clock-names = "fpga-pwm-clk";
+				status = "okay";
+			};
+
 
 			fpga_intc: 	fpga_intc@0 { /* drivers/misc/ts-fpga/ts7120-intc.c */
 				compatible = "technologic,TS7120-intc";
@@ -782,8 +810,8 @@
 		/**** I2C (bit-banged gpio) ***/
 		pinctrl_i2c4_gpio: i2c4grpgpio {
 			fsl,pins = <
-				MX6UL_PAD_UART3_CTS_B__GPIO1_IO26	0x1b020	// MIKRO_I2C_DAT
-				MX6UL_PAD_UART3_RTS_B__GPIO1_IO27	0x1b020	// MIKRO_I2C_CLK
+				MX6UL_PAD_UART3_CTS_B__GPIO1_IO26	0x4001a8b0	// MIKRO_I2C_DAT
+				MX6UL_PAD_UART3_RTS_B__GPIO1_IO27	0x4001a8b0	// MIKRO_I2C_CLK
 			>;
 		};
 
