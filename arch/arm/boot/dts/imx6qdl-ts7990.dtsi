@@ -145,7 +145,7 @@
 			regulator-name = "reg_can_3v3";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
-			gpio = <&gpio6 31 0>;
+			gpio = <&gpio6 31 GPIO_ACTIVE_HIGH>;
 		};
 
 		reg_usb_otg_vbus: usb_otg_vbus {

@@ -99,6 +99,14 @@
 		startup-delay-us = <60000>;
 	};
 
+	reg_can_3v3: reg_can1_3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "reg_can_3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&gpio5 16 GPIO_ACTIVE_HIGH>;
+	};
+
 	sound-sgtl5000 {
 		audio-codec = <&sgtl5000>;
 		audio-routing =
@@ -119,6 +127,14 @@
 
 &audmux {
 	status = "okay";
+};
+
+&can1 {
+	xceiver-supply = <&reg_can_3v3>;
+};
+
+&can2 {
+	xceiver-supply = <&reg_can_3v3>;
 };
 
 &ecspi2 {
