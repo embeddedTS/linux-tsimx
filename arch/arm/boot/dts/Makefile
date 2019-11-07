@@ -382,6 +382,7 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
 	imx6ul-ts718A.dtb \
 	imx6ul-ts7553v2.dtb \
 	imx6ul-ts7553v2C.dtb \
+	imx6ul-ts7553v2-e.dtb \
 	imx6ul-14x14-ddr3-arm2.dtb \
 	imx6ul-14x14-ddr3-arm2-emmc.dtb	\
 	imx6ul-14x14-ddr3-arm2-flexcan2.dtb \
