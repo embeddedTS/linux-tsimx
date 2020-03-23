@@ -518,8 +518,6 @@
 	vqmmc-supply = <&reg_1p8v>;
 	bus-width = <4>;
 	non-removable;
-	no-1-8-v;
-	broken-cd;
 	keep-power-in-suspend;
 	status = "okay";
 };
