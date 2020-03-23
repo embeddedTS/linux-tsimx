@@ -40,15 +40,15 @@
  */
 
 /dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-ts4900.dtsi"
-#include "imx6qdl-ts4900-2d.dtsi"
+#include "imx6q.dtsi"
+#include "imx6qdl-ts4900-reve.dtsi"
+#include "imx6qdl-ts4900-ts8950.dtsi"
 
 / {
-	model = "Technologic Systems i.MX6 Solo/DualLite TS-4900 (0x2d)";
-	compatible = "fsl,imx6dl-ts4900", "fsl,imx6dl";
+	model = "Technologic Systems i.MX6 Quad TS-4900 (TS-TPC-8950)";
+	compatible = "fsl,imx6q-ts4900", "fsl,imx6q";
 };
 
-&epdc {
-	status = "disabled";
+&sata {
+        status = "okay";
 };

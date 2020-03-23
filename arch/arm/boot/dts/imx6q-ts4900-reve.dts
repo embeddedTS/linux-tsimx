@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Technologic Systems
+ * Copyright 2015 Technologic Systems
  *
  * This file is dual-licensed: you can use it either under the terms
  * of the GPL or the X11 license, at your option. Note that this dual
@@ -40,15 +40,14 @@
  */
 
 /dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-ts4900.dtsi"
-#include "imx6qdl-ts4900-2d.dtsi"
+#include "imx6q.dtsi"
+#include "imx6qdl-ts4900-reve.dtsi"
 
 / {
-	model = "Technologic Systems i.MX6 Solo/DualLite TS-4900 (0x2d)";
-	compatible = "fsl,imx6dl-ts4900", "fsl,imx6dl";
+	model = "Technologic Systems i.MX6 Quad TS-4900 (Default Device Tree)";
+	compatible = "technologic,imx6q-ts4900", "fsl,imx6q";
 };
 
-&epdc {
-	status = "disabled";
+&sata {
+	status = "okay";
 };

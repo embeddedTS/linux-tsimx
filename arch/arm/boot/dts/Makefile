@@ -360,6 +360,11 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dl-ts4900-14.dtb \
 	imx6dl-ts4900-15.dtb \
 	imx6dl-ts4900-2d.dtb \
+	imx6dl-ts4900-reve.dtb \
+	imx6dl-ts4900-reve-2.dtb \
+	imx6dl-ts4900-reve-14.dtb \
+	imx6dl-ts4900-reve-15.dtb \
+	imx6dl-ts4900-reve-2d.dtb \
 	imx6dl-ts7970.dtb \
 	imx6dl-ts7990-lxd-revb.dtb \
 	imx6dl-ts7990-lxd.dtb \
@@ -439,6 +444,11 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-ts4900-14.dtb \
 	imx6q-ts4900-15.dtb \
 	imx6q-ts4900-2d.dtb \
+	imx6q-ts4900-reve.dtb \
+	imx6q-ts4900-reve-2.dtb \
+	imx6q-ts4900-reve-14.dtb \
+	imx6q-ts4900-reve-15.dtb \
+	imx6q-ts4900-reve-2d.dtb \
 	imx6q-ts7970.dtb \
 	imx6q-ts7990-lxd-revb.dtb \
 	imx6q-ts7990-lxd.dtb \
