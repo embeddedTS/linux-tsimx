@@ -277,6 +277,8 @@ static int isl12022_probe(struct i2c_client *client,
 			  const struct i2c_device_id *id)
 {
 	struct isl12022 *isl12022;
+	uint8_t buf;
+	int ret;
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
@@ -287,6 +289,11 @@ static int isl12022_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, isl12022);
+
+	ret = isl12022_read_regs(client, ISL12022_REG_INT, &buf, 1);
+	if (ret){
+		return -ENODEV;
+	}
 
 	isl12022->rtc = devm_rtc_device_register(&client->dev,
 					isl12022_driver.driver.name,
