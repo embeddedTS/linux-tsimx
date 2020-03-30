@@ -168,6 +168,11 @@
 		mux-int-port = <1>;
 		ssi-controller = <&ssi1>;
 	};
+
+	v4l2_out {
+		compatible = "fsl,mxc_v4l2_output";
+		status = "okay";
+	};
 };
 
 &audmux {
