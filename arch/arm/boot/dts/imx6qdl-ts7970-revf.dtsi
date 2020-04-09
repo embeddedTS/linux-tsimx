@@ -654,6 +654,7 @@
 	vmmc-supply = <&reg_3p3v>;
 	vqmmc-supply = <&reg_1p8v>;
 	bus-width = <4>;
+	fsl,tuning-step = <2>;
 	non-removable;
 	keep-power-in-suspend;
 	status = "okay";
