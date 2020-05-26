@@ -284,6 +284,7 @@
 	status = "okay";
 	fsl,uart-has-rtscts;
 	fsl,uart-tx-enable-gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>; /* SPARE_2 */
+	linux,rs485-enabled-at-boot-time;
 };
 
 &uart5 {
