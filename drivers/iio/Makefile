@@ -33,3 +33,4 @@ obj-y += pressure/
 obj-y += proximity/
 obj-y += temperature/
 obj-y += trigger/
+obj-y += stm/
