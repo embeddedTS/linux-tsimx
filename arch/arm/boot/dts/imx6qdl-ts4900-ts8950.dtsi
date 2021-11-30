@@ -142,8 +142,8 @@
 };
 
 &ecspi2 {
-	fsl,spi-num-chipselects = <2>;
-	cs-gpios = <&gpio6 2 GPIO_ACTIVE_HIGH>, <&gpio5 29 GPIO_ACTIVE_HIGH>;
+	fsl,spi-num-chipselects = <3>;
+	cs-gpios = <&gpio6 2 GPIO_ACTIVE_HIGH>, <&gpio5 29 GPIO_ACTIVE_HIGH>, <&gpio4 27 GPIO_ACTIVE_HIGH>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi2>;
 	status = "okay";
@@ -167,6 +167,12 @@
 		ti,debounce-max = /bits/ 16 <255>;
 		ti,pendown-gpio-debounce = <5000>;
 		wakeup-source;
+	};
+
+	spidev: spi@2 {
+		compatible = "spidev";
+		reg = <2>;
+		spi-max-frequency = <18000000>;
 	};
 };
 
