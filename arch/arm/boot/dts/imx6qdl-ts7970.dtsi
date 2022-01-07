@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Technologic Systems
+ * Copyright 2015-2022 Technologic Systems, Inc. dba embeddedTS
  * Copyright 2017 Savoir-Faire Linux
  *
  * This file is dual-licensed: you can use it either under the terms
@@ -287,7 +287,7 @@
 	};
 
 	gpio8: gpio@28 {
-		compatible = "technologic,ts7970-gpio";
+		compatible = "embeddedts,ts7970-gpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
