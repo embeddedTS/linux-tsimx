@@ -1,7 +1,7 @@
 /*
  *  Driver for TS-7120 FPGA interrupt-controller
  *
- *  Copyright (C) 2019 Technologic Systems Inc.
+ *  Copyright (C) 2019-2022 Technologic Systems, Inc. dba embeddedTS
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ static struct TS7120_intc_priv {
 
 static const struct of_device_id TS7120_intc_of_match_table[] = {
 	{
-		.compatible = "technologic,TS7120-intc",
+		.compatible = "embeddedts,TS7120-intc",
 	},
 
 	{ /* sentinel */ },
@@ -202,6 +202,6 @@ static struct platform_driver TS7120_intc_driver = {
 };
 module_platform_driver(TS7120_intc_driver);
 
-MODULE_AUTHOR("Technologic Systems");
-MODULE_DESCRIPTION("Interrupt Controller for Technologic Systems TS-7120 FPGA");
+MODULE_AUTHOR("embeddedTS");
+MODULE_DESCRIPTION("Interrupt Controller for embeddedTS TS-7120 FPGA");
 MODULE_LICENSE("GPL");

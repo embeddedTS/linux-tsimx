@@ -498,7 +498,7 @@ static int setup_device(struct tssdcard_host *host, int lun)
 
 static const struct of_device_id tssdcard_of_match[] = {
 	{
-		.compatible = "technologicsystems,tssdcard",
+		.compatible = "embeddedts,tssdcard",
 	}
 };
 
@@ -650,6 +650,6 @@ MODULE_DEVICE_TABLE(platform, tssdcard_devtype);
 module_platform_driver(tssdcard_driver);
 
 MODULE_DESCRIPTION("TS-7120 SDHC Driver");
-MODULE_AUTHOR("Ian Coughlan, Technologic Systems");
+MODULE_AUTHOR("Ian Coughlan, embeddedTS");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:tssdcard");

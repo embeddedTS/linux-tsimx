@@ -1,6 +1,6 @@
 /*
  * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2015 Technologic Systems
+ * Copyright 2015-2022 Technologic Systems, Inc. dba embeddedTS
  *
  * The code contained herein is licensed under the GNU General Public
  * License. You may obtain a copy of the GNU General Public License
@@ -266,7 +266,7 @@
 	};
 
 	gpio8: gpio@28 {
-		compatible = "technologic,ts7970-gpio";
+		compatible = "embeddedts,ts7970-gpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;

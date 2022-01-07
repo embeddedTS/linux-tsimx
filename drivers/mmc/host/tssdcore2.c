@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2012, Technologic Systems
+ * Copyright (c) 2006-202 Technologic Systems, Inc. dba embeddedTS
  * All rights reserved.
  */
 

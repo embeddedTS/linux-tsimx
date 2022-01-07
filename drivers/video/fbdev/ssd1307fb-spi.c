@@ -5,7 +5,7 @@
  *
  * Licensed under the GPLv2 or later.
  *
- * Modified by Technologic Systems for SPI (original is i2c)
+ * Modified by embeddedTS for SPI (original is i2c)
  */
 
 #include <linux/init.h>
@@ -624,5 +624,5 @@ module_spi_driver(ssd1307fb_driver);
 
 MODULE_DESCRIPTION("FB driver for the Solomon SSD1307 OLED controller");
 MODULE_AUTHOR("Maxime Ripard <maxime.ripard@free-electrons.com>");
-MODULE_AUTHOR("Technologic Systems Inc.");
+MODULE_AUTHOR("embeddedTS Inc.");
 MODULE_LICENSE("GPL v2");

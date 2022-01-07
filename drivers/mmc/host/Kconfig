@@ -366,10 +366,10 @@ config MMC_OMAP_HS
 	  If unsure, say N.
 
 config MMC_TS_SDCARD
-		  tristate "SD Card support for Technologic Systems ARM platform"
+		  tristate "SD Card support for embeddedTS ARM platform"
 		  depends on ARCH_MXC && IMX_WEIM
 		  help
-			 SD Card support for Technologic Systems SD Card core
+			 SD Card support for embeddedTS SD Card core
 			 on TS-7120 board.
 
 config MMC_WBSD

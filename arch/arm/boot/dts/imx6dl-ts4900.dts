@@ -15,6 +15,6 @@
 #include "imx6qdl-ts4900.dtsi"
 
 / {
-	model = "Technologic Systems i.MX6 Solo/DualLite TS-4900 (Default Device Tree)";
+	model = "embeddedTS i.MX6 Solo/DualLite TS-4900 (Default Device Tree)";
 	compatible = "fsl,imx6dl-ts4900", "fsl,imx6dl";
 };
