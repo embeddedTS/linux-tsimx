@@ -46,7 +46,7 @@
 
 / {
 	model = "embeddedTS i.MX6 Quad TS-7970 (Default Device Tree)";
-	compatible = "embeddedts,imx6q-ts7970", "fsl,imx6q";
+	compatible = "technologic,imx6q-ts7970", "fsl,imx6q";
 
 	/* Will be filled by the bootloader */
 	memory@10000000 {

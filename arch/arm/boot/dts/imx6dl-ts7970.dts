@@ -46,7 +46,7 @@
 
 / {
 	model = "embeddedTS i.MX6 Solo/DualLite TS-7970 (Default Device Tree)";
-	compatible = "embeddedts,imx6dl-ts7970", "fsl,imx6dl";
+	compatible = "technologic,imx6dl-ts7970", "fsl,imx6dl";
 
 	/* Will be filled by the bootloader */
 	memory@10000000 {
