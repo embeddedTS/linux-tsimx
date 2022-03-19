@@ -294,7 +294,7 @@ static const struct gpio_chip template_chip = {
 
 static const struct of_device_id TS7120_gpio_of_match_table[] = {
 	{
-		.compatible = "embeddedts,TS7120-gpio",
+		.compatible = "technologic,TS7120-gpio",
 	},
 
 	{ /* sentinel */ },

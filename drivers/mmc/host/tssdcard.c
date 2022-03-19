@@ -498,7 +498,7 @@ static int setup_device(struct tssdcard_host *host, int lun)
 
 static const struct of_device_id tssdcard_of_match[] = {
 	{
-		.compatible = "embeddedts,tssdcard",
+		.compatible = "technologic,tssdcard",
 	}
 };
 

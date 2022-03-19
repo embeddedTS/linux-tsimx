@@ -49,7 +49,7 @@ static struct TS7120_intc_priv {
 
 static const struct of_device_id TS7120_intc_of_match_table[] = {
 	{
-		.compatible = "embeddedts,TS7120-intc",
+		.compatible = "technologic,TS7120-intc",
 	},
 
 	{ /* sentinel */ },

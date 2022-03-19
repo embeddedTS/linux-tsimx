@@ -13,7 +13,7 @@
 
 / {
 	model = "embeddedTS i.MX6ul TS-7120";
-	compatible = "embeddedts,ts7120", "fsl,imx6ul";
+	compatible = "technologic,ts7120", "fsl,imx6ul";
 
 	chosen {
 		stdout-path = &uart1;
@@ -498,7 +498,7 @@
 		};
 
 		tssdcard: tssdcard1@200 { /* drivers/mmc/host/tssdcard.c */
-			compatible = "embeddedts,tssdcard";
+			compatible = "technologic,tssdcard";
 			#address-cells = <0x2>;
 			#size-cells = <0x2>;
 			/* driver requires access to 0x200 for the core, and also to syscon */
@@ -591,7 +591,7 @@
 			status = "okay";
 
 			gpio6: fpga_gpio6@10 { /* drivers/gpio/gpio-ts7120.c */
-				compatible = "embeddedts,TS7120-gpio";
+				compatible = "technologic,TS7120-gpio";
 				reg = <0 0 0x50>;
 				gpio-controller;
 				#gpio-cells = <2>;
@@ -603,7 +603,7 @@
 			};
 
 			micro_pwm: micro_pwm@3c { /* drivers/pwm/pwm-ts71xx.c */
-				compatible = "embeddedts,ts7120-pwm";
+				compatible = "technologic,ts7120-pwm";
 				reg = <0x3c 0 4>;
 				clocks = <&fpga_clk_99MHz>;
 				clock-names = "fpga-pwm-clk";
@@ -612,7 +612,7 @@
 
 
 			fpga_intc: 	fpga_intc@0 { /* drivers/misc/ts-fpga/ts7120-intc.c */
-				compatible = "embeddedts,TS7120-intc";
+				compatible = "technologic,TS7120-intc";
 
 				interrupt-controller;
 				#interrupt-cells = <1>;

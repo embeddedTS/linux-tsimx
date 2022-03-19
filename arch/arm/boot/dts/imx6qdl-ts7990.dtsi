@@ -323,7 +323,7 @@
 	};
 
 	gpio8: gpio@28 {
-		compatible = "embeddedts,ts7970-gpio";
+		compatible = "technologic,ts7970-gpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
