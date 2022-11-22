@@ -159,6 +159,9 @@
 	isl12022: rtc@6f {
 		compatible = "isil,isl12022";
 		reg = <0x6f>;
+		tse-minutes = <1>;
+		vb75 = <2>; /* 2.25V */
+		vb85 = <2>; /* 2.55V */
 	};
 
 	gpio8: gpio@28 {
