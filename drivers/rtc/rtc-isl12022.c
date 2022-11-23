@@ -286,6 +286,7 @@ static const struct rtc_class_ops isl12022_emulated_rtc_ops = {
 static const struct regmap_config regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
+	.use_single_rw = true,
 };
 
 static u32 isl12022_hwmon_chip_config[] = {
