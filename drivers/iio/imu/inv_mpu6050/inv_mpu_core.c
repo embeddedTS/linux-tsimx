@@ -110,7 +110,7 @@ static int inv_mpu6050_write_reg_unlocked(struct inv_mpu6050_state *st,
 }
 
 static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
-				     u32 chan_id)
+					  u32 chan_id)
 {
 	struct iio_dev *indio_dev = mux_priv;
 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
@@ -120,7 +120,7 @@ static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
 	mutex_lock(&indio_dev->mlock);
 	if (!st->powerup_count) {
 		ret = inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
-						     0);
+							  0);
 		if (ret)
 			goto write_error;
 
@@ -129,8 +129,8 @@ static int inv_mpu6050_select_bypass(struct i2c_adapter *adap, void *mux_priv,
 	if (!ret) {
 		st->powerup_count++;
 		ret = inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
-						     st->client->irq |
-						     INV_MPU6050_BIT_BYPASS_EN);
+							  st->client->irq |
+							  INV_MPU6050_BIT_BYPASS_EN);
 	}
 write_error:
 	mutex_unlock(&indio_dev->mlock);
@@ -139,7 +139,7 @@ write_error:
 }
 
 static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
-				       void *mux_priv, u32 chan_id)
+						 void *mux_priv, u32 chan_id)
 {
 	struct iio_dev *indio_dev = mux_priv;
 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
@@ -147,11 +147,11 @@ static int inv_mpu6050_deselect_bypass(struct i2c_adapter *adap,
 	mutex_lock(&indio_dev->mlock);
 	/* It doesn't really mattter, if any of the calls fails */
 	inv_mpu6050_write_reg_unlocked(st, st->reg->int_pin_cfg,
-				       st->client->irq);
+						 st->client->irq);
 	st->powerup_count--;
 	if (!st->powerup_count)
 		inv_mpu6050_write_reg_unlocked(st, st->reg->pwr_mgmt_1,
-					       INV_MPU6050_BIT_SLEEP);
+							 INV_MPU6050_BIT_SLEEP);
 	mutex_unlock(&indio_dev->mlock);
 
 	return 0;
@@ -163,11 +163,11 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
 	int result;
 
 	/* switch clock needs to be careful. Only when gyro is on, can
-	   clock source be switched to gyro. Otherwise, it must be set to
-	   internal clock */
+		clock source be switched to gyro. Otherwise, it must be set to
+		internal clock */
 	if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
 		result = i2c_smbus_read_i2c_block_data(st->client,
-				       st->reg->pwr_mgmt_1, 1, &mgmt_1);
+						 st->reg->pwr_mgmt_1, 1, &mgmt_1);
 		if (result != 1)
 			return result;
 
@@ -176,7 +176,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
 
 	if ((INV_MPU6050_BIT_PWR_GYRO_STBY == mask) && (!en)) {
 		/* turning off gyro requires switch to internal clock first.
-		   Then turn off gyro engine */
+			Then turn off gyro engine */
 		mgmt_1 |= INV_CLK_INTERNAL;
 		result = inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1, mgmt_1);
 		if (result)
@@ -184,7 +184,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
 	}
 
 	result = i2c_smbus_read_i2c_block_data(st->client,
-				       st->reg->pwr_mgmt_2, 1, &d);
+						 st->reg->pwr_mgmt_2, 1, &d);
 	if (result != 1)
 		return result;
 	if (en)
@@ -219,14 +219,14 @@ int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on)
 		/* Already under indio-dev->mlock mutex */
 		if (!st->powerup_count)
 			result = inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1,
-						       0);
+								 0);
 		if (!result)
 			st->powerup_count++;
 	} else {
 		st->powerup_count--;
 		if (!st->powerup_count)
 			result = inv_mpu6050_write_reg(st, st->reg->pwr_mgmt_1,
-						       INV_MPU6050_BIT_SLEEP);
+								 INV_MPU6050_BIT_SLEEP);
 	}
 
 	if (result)
@@ -300,10 +300,10 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050_state  *st, int reg,
 }
 
 static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
-			      struct iio_chan_spec const *chan,
-			      int *val,
-			      int *val2,
-			      long mask) {
+					struct iio_chan_spec const *chan,
+					int *val,
+					int *val2,
+					long mask) {
 	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
 
 	switch (mask) {
@@ -470,10 +470,10 @@ static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st, int val)
 }
 
 static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
-			       struct iio_chan_spec const *chan,
-			       int val,
-			       int val2,
-			       long mask) {
+					 struct iio_chan_spec const *chan,
+					 int val,
+					 int val2,
+					 long mask) {
 	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
 	int result;
 
@@ -617,7 +617,7 @@ static ssize_t inv_attr_show(struct device *dev,
 
 	switch (this_attr->address) {
 	/* In MPU6050, the two matrix are the same because gyro and accel
-	   are integrated in one chip */
+		are integrated in one chip */
 	case ATTR_GYRO_MATRIX:
 	case ATTR_ACCL_MATRIX:
 		m = st->plat_data.orientation;
@@ -663,7 +663,7 @@ static int inv_mpu6050_validate_trigger(struct iio_dev *indio_dev,
 				.storagebits = 16,                    \
 				.shift = 0 ,                          \
 				.endianness = IIO_BE,                 \
-			     },                                       \
+				  },                                       \
 	}
 
 static const struct iio_chan_spec inv_mpu_channels[] = {
@@ -814,9 +814,9 @@ static int inv_mpu_probe(struct i2c_client *client,
 	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
 
 	result = iio_triggered_buffer_setup(indio_dev,
-					    inv_mpu6050_irq_handler,
-					    inv_mpu6050_read_fifo,
-					    NULL);
+						 inv_mpu6050_irq_handler,
+						 inv_mpu6050_read_fifo,
+						 NULL);
 	if (result) {
 		dev_err(&st->client->dev, "configure buffer fail %d\n",
 				result);
@@ -837,11 +837,11 @@ static int inv_mpu_probe(struct i2c_client *client,
 	}
 
 	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
-					      &client->dev,
-					      indio_dev,
-					      0, 0, 0,
-					      inv_mpu6050_select_bypass,
-					      inv_mpu6050_deselect_bypass);
+							&client->dev,
+							indio_dev,
+							0, 0, 0,
+							inv_mpu6050_select_bypass,
+							inv_mpu6050_deselect_bypass);
 	if (!st->mux_adapter) {
 		result = -ENODEV;
 		goto out_unreg_device;
@@ -904,6 +904,9 @@ static SIMPLE_DEV_PM_OPS(inv_mpu_pmops, inv_mpu_suspend, inv_mpu_resume);
 static const struct i2c_device_id inv_mpu_id[] = {
 	{"mpu6050", INV_MPU6050},
 	{"mpu6500", INV_MPU6500},
+
+	{"mpu9250", INV_MPU9250},
+
 	{}
 };
 

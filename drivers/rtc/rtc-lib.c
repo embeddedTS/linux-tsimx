@@ -108,6 +108,9 @@ int rtc_valid_tm(struct rtc_time *tm)
 		|| ((unsigned)tm->tm_sec) >= 60)
 		return -EINVAL;
 
+	if (rtc_tm_to_time64(tm) > 0x7FFFFED4) /* 5 minutes before overflow */
+		return -EINVAL;
+
 	return 0;
 }
 EXPORT_SYMBOL(rtc_valid_tm);

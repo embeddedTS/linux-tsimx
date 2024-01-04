@@ -129,7 +129,7 @@ static void ssd1307fb_update_display(struct ssd1307fb_par *par)
 	int i, j, k;
 
 	array = ssd1307fb_alloc_array(par->width * par->height / 8,
-				      SSD1307FB_DATA);
+						SSD1307FB_DATA);
 	if (!array)
 		return;
 
@@ -334,7 +334,7 @@ static int ssd1307fb_ssd1306_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	ret = ssd1307fb_write_cmd(par->client, 0x20);
+	ret = ssd1307fb_write_cmd(par->client, par->page_offset);
 	if (ret < 0)
 		return ret;
 
@@ -361,7 +361,7 @@ static int ssd1307fb_ssd1306_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	ret = ssd1307fb_write_cmd(par->client, 0x22);
+	ret = ssd1307fb_write_cmd(par->client, 0x12);
 	if (ret < 0)
 		return ret;
 
@@ -444,7 +444,7 @@ static const struct of_device_id ssd1307fb_of_match[] = {
 MODULE_DEVICE_TABLE(of, ssd1307fb_of_match);
 
 static int ssd1307fb_probe(struct i2c_client *client,
-			   const struct i2c_device_id *id)
+				const struct i2c_device_id *id)
 {
 	struct fb_info *info;
 	struct device_node *node = client->dev.of_node;
@@ -469,7 +469,7 @@ static int ssd1307fb_probe(struct i2c_client *client,
 	par->client = client;
 
 	par->ops = (struct ssd1307fb_ops *)of_match_device(ssd1307fb_of_match,
-							   &client->dev)->data;
+								&client->dev)->data;
 
 	par->reset = of_get_named_gpio(client->dev.of_node,
 					 "reset-gpios", 0);
@@ -521,8 +521,8 @@ static int ssd1307fb_probe(struct i2c_client *client,
 	fb_deferred_io_init(info);
 
 	ret = devm_gpio_request_one(&client->dev, par->reset,
-				    GPIOF_OUT_INIT_HIGH,
-				    "oled-reset");
+					 GPIOF_OUT_INIT_HIGH,
+					 "oled-reset");
 	if (ret) {
 		dev_err(&client->dev,
 			"failed to request gpio %d: %d\n",

@@ -175,6 +175,7 @@ int driver_register(struct device_driver *drv)
 	}
 	kobject_uevent(&drv->p->kobj, KOBJ_ADD);
 
+	atomic_set(&drv->deferred_probe_ctr, 0);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(driver_register);

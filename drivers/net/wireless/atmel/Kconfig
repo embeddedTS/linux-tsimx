@@ -1,0 +1,27 @@
+menuconfig ATMEL_SMARTCONNECT
+    bool "Atmel SmartConnect wireless cards Driver (Old driver)"
+    depends on WLAN && CFG80211
+#    select WIRELESS_EXT
+#    select WEXT_PRIV
+    ---help---
+      NOTE: This module is left in this kernel tree for
+      historic purposes, it is very likely not what you want
+      to be using.
+
+      This module adds support for the Atmel wireless drivers.
+      
+      For more information on the Atmel Wi-Fi products visit:
+      http://www.atmel.com/products/wireless/wifi/default.aspx
+      
+      For information on the WILC1000 visit:
+      http://www.atmel.com/devices/ATWILC1000.aspx
+      
+      For information on the WILC3000 visit:
+      http://www.atmel.com/devices/ATWILC3000.aspx
+
+if ATMEL_SMARTCONNECT
+
+source "drivers/net/wireless/atmel/wilc3000/Kconfig"
+source "drivers/net/wireless/atmel/wilc1000/Kconfig"
+
+endif

@@ -278,6 +278,13 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dl-sabresd-btwifi.dtb \
 	imx6dl-sabresd-hdcp.dtb \
 	imx6dl-sabresd-ldo.dtb \
+	imx6dl-ts4900.dtb \
+	imx6dl-ts4900-2.dtb \
+	imx6dl-ts4900-14.dtb \
+	imx6dl-ts7970.dtb \
+	imx6dl-ts7990-lxd.dtb \
+	imx6dl-ts7990-microtips.dtb \
+	imx6dl-ts7990-okaya.dtb \
 	imx6dl-tx6dl-comtft.dtb \
 	imx6dl-tx6u-801x.dtb \
 	imx6dl-tx6u-811x.dtb \
@@ -325,6 +332,13 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-sabresd-enetirq.dtb \
 	imx6q-sbc6x.dtb \
 	imx6q-tbs2910.dtb \
+	imx6q-ts4900.dtb \
+	imx6q-ts4900-2.dtb \
+	imx6q-ts4900-14.dtb \
+	imx6q-ts7970.dtb \
+	imx6q-ts7990-lxd.dtb \
+	imx6q-ts7990-microtips.dtb \
+	imx6q-ts7990-okaya.dtb \
 	imx6q-tx6q-1010.dtb \
 	imx6q-tx6q-1010-comtft.dtb \
 	imx6q-tx6q-1020.dtb \
@@ -359,6 +373,16 @@ dtb-$(CONFIG_SOC_IMX6SX) += \
 	imx6sx-19x19-arm2-csi.dtb \
 	imx6sx-19x19-arm2-gpmi-weim.dtb
 dtb-$(CONFIG_SOC_IMX6UL) += \
+	imx6ul-ts4100.dtb \
+	imx6ul-ts4100-2.dtb \
+	imx6ul-ts4100-2f.dtb \
+	imx6ul-ts4100-16.dtb \
+	imx6ul-ts7120.dtb \
+	imx6ul-ts7180.dtb \
+	imx6ul-ts718A.dtb \
+	imx6ul-ts7553v2.dtb \
+	imx6ul-ts7553v2C.dtb \
+	imx6ul-ts7553v2-e.dtb \
 	imx6ul-14x14-ddr3-arm2.dtb \
 	imx6ul-14x14-ddr3-arm2-emmc.dtb	\
 	imx6ul-14x14-ddr3-arm2-flexcan2.dtb \
