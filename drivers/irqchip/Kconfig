@@ -306,6 +306,13 @@ config TS4800_IRQ
 	help
 	  Support for the TS-9370 FPGA IRQ controller
 
+config WIZARD_IRQ
+	tristate "embeddedTS Wizard IRQ controller"
+	select IRQ_DOMAIN
+	depends on MFD_TS_WIZARD
+	help
+	  Add support for interrupts under the embeddedTS Wizard management microcontroller
+
 config VERSATILE_FPGA_IRQ
 	bool
 	select IRQ_DOMAIN
