@@ -919,7 +919,7 @@ static int tc_set_common_video_mode(struct tc_data *tc,
 	 */
 	ret = regmap_write(tc->regmap, VPCTRL0,
 			   FIELD_PREP(VSDELAY, right_margin + 10) |
-			   OPXLFMT_RGB888 | FRMSYNC_ENABLED | MSF_DISABLED);
+			   OPXLFMT_RGB888 | FRMSYNC_DISABLED | MSF_DISABLED);
 	if (ret)
 		return ret;
 
