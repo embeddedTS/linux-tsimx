@@ -118,6 +118,14 @@ config TMP117
 	  This driver can also be built as a module. If so, the module will
 	  be called tmp117.
 
+config TS_WIZARD_TEMP
+	tristate "embeddedTS Wizard Temperature sensor"
+	depends on OF
+	depends on MFD_TS_WIZARD
+	help
+	  Say yes here to build support for embeddedTS wizard
+	  temperature sensor.
+
 config TSYS01
 	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
 	depends on I2C
