@@ -7,6 +7,7 @@
  * https://www.ti.com/lit/ds/symlink/adc128s052.pdf
  * https://www.ti.com/lit/ds/symlink/adc122s021.pdf
  * https://www.ti.com/lit/ds/symlink/adc124s021.pdf
+ * https://www.ti.com/lit/ds/symlink/adc121s021.pdf
  */
 
 #include <linux/err.h>
@@ -109,6 +110,10 @@ static const struct iio_chan_spec adc128s052_channels[] = {
 	ADC128_VOLTAGE_CHANNEL(7),
 };
 
+static const struct iio_chan_spec adc121s021_channels[] = {
+	ADC128_VOLTAGE_CHANNEL(0),
+};
+
 static const struct iio_chan_spec adc122s021_channels[] = {
 	ADC128_VOLTAGE_CHANNEL(0),
 	ADC128_VOLTAGE_CHANNEL(1),
@@ -125,6 +130,7 @@ static const struct adc128_configuration adc128_config[] = {
 	{ adc128s052_channels, ARRAY_SIZE(adc128s052_channels) },
 	{ adc122s021_channels, ARRAY_SIZE(adc122s021_channels) },
 	{ adc124s021_channels, ARRAY_SIZE(adc124s021_channels) },
+	{ adc121s021_channels, ARRAY_SIZE(adc121s021_channels) },
 };
 
 static const struct iio_info adc128_info = {
@@ -184,6 +190,7 @@ static const struct of_device_id adc128_of_match[] = {
 	{ .compatible = "ti,adc124s021", .data = &adc128_config[2] },
 	{ .compatible = "ti,adc124s051", .data = &adc128_config[2] },
 	{ .compatible = "ti,adc124s101", .data = &adc128_config[2] },
+	{ .compatible = "ti,adc121s021", .data = &adc128_config[3] },
 	{ /* sentinel */ },
 };
 MODULE_DEVICE_TABLE(of, adc128_of_match);
@@ -196,6 +203,7 @@ static const struct spi_device_id adc128_id[] = {
 	{ "adc124s021", (kernel_ulong_t)&adc128_config[2] },
 	{ "adc124s051", (kernel_ulong_t)&adc128_config[2] },
 	{ "adc124s101", (kernel_ulong_t)&adc128_config[2] },
+	{ "adc121s021", (kernel_ulong_t)&adc128_config[3] },
 	{ }
 };
 MODULE_DEVICE_TABLE(spi, adc128_id);
