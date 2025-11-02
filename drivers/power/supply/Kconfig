@@ -1026,4 +1026,11 @@ config FUEL_GAUGE_MM8013
 	  the state of charge, temperature, cycle count, actual and design
 	  capacity, etc.
 
+config TSSILO_SUPERCAPS
+	tristate "embeddedTS SILO supercaps driver"
+	depends on I2C
+	select REGMAP_I2C
+	help
+	  Only useful on boards with the Wizard device.
+
 endif # POWER_SUPPLY
