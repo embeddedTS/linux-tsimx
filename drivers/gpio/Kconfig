@@ -736,6 +736,14 @@ config GPIO_TS4800
 	help
 	  This driver support TS-4800 FPGA GPIO controllers.
 
+config GPIO_TS9370
+	tristate "embeddedTS TS-9370 GPIO Support"
+	select GPIO_GENERIC
+	select GPIOLIB_IRQCHIP
+	default n
+	help
+	  Say yes here to support GPIO on the embeddedTS products.
+
 config GPIO_THUNDERX
 	tristate "Cavium ThunderX/OCTEON-TX GPIO"
 	depends on ARCH_THUNDER || (64BIT && COMPILE_TEST)
