@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: GPL-2.0 OR X11
+/*
+ * Copyright 2024-2025 Technologic Systems, Inc. dba embeddedTS
+ */
+
+/dts-v1/;
+/plugin/;
+#include <dt-bindings/gpio/gpio.h>
+
+&{/} {
+    model = "embeddedTS TS-4300 (TS-8551)";
+	compatible = "technologic,ts4300-ts8551", "technologic,ts4300", "fsl,imx93";
+};
+
+&flexcan1 {
+	status = "okay";
+};
+
+&lpi2c1 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	/* Recommend using the TS-4300's built in RTC with this SOM */
+	m41t00s: rtc@68 {
+		compatible = "st,m41t00";
+		reg = <0x68>;
+		status = "disabled";
+	};
+};
+
+&lpspi4 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	num-cs = <1>;
+	status = "okay";
+
+	spifram: eeprom@0 {
+		compatible = "atmel,at25";
+		reg = <0>;
+		spi-max-frequency = <2000000>;
+		size = <0x800>;
+		address-width = <16>;
+		pagesize = <64>;
+	};
+};
+
+&lpuart2 {
+	uart-has-rtscts;
+	rts-gpios = <&fpga_gpio3 14 GPIO_ACTIVE_LOW>;
+	linux,rs485-enabled-at-boot-time;
+};
+
+&wizard_silo {
+	status = "okay";
+};
