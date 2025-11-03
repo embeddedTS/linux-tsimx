@@ -578,6 +578,9 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-9x9-qsb.dtb \
 dtb-$(CONFIG_ARCH_MXC) += imx93-tqma9352-mba93xxca.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-tqma9352-mba93xxla.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-ts9370.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-16.dtbo
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-16-mipi2dp.dtbo
 
 dtb-$(CONFIG_ARCH_MXC) += imx91-9x9-qsb.dtb \
 			  imx91-9x9-qsb-can1.dtb \
