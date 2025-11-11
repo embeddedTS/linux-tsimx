@@ -582,8 +582,6 @@
 };
 
 &usbotg2 {
-	#address-cells = <1>;
-	#size-cells = <0>;
 	dr_mode = "host";
 	status = "okay";
 };
@@ -1004,9 +1002,5 @@
 };
 
 &ocotp {
-	status = "disabled";
-};
-
-&bbnsm_rtc {
 	status = "disabled";
 };
