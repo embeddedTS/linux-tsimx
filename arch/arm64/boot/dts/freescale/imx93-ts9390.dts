@@ -851,6 +851,10 @@
 	status = "okay";
 };
 
+&ocotp {
+	status = "disabled";
+};
+
 &sai1 {
 	#sound-dai-cells = <0>;
 	pinctrl-names = "default";
