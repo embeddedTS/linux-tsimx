@@ -1332,6 +1332,12 @@
 		>;
 	};
 
+	pinctrl_wdog: wdoggrp {
+		fsl,pins = <
+			MX93_PAD_WDOG_ANY__WDOG1_WDOG_ANY	0x82
+		>;
+	};
+
 	pinctrl_wizirq: wizard-irqgrp {
 		fsl,pins = <
 			MX93_PAD_CCM_CLKO4__GPIO4_IO29		0x4000019e
@@ -1340,6 +1346,8 @@
 };
 
 &wdog3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
 	status = "okay";
 };
 
@@ -1354,6 +1362,10 @@
 
 &mu2 {
 	status = "okay";
+};
+
+&ocotp {
+	status = "disabled";
 };
 
 &media_blk_ctrl {
