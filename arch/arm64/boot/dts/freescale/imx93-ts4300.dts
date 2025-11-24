@@ -76,7 +76,7 @@
 
 		ethosu_mem: ethosu-reserved@a5000000 {
 			compatible = "shared-dma-pool";
-			reg = <0x0 0xa5000000 0x0 0x10000000>;  /* 256 MB */
+			reg = <0x0 0xa5000000 0x0 0x10000000>; /* 256 MB */
 			reusable;
 		};
 	};
@@ -132,7 +132,7 @@
 		io-channels = <&wizard_adc 0>;
 		label = "AN_SW_5.2V";
 		output-ohms = <75000>; /* R2: 75k */
-		full-ohms = <150000>;  /* R1 (75k) + R2 (75k) */
+		full-ohms = <150000>; /* R1 (75k) + R2 (75k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -141,7 +141,7 @@
 		io-channels = <&wizard_adc 1>;
 		label = "AN_MAIN_5V";
 		output-ohms = <100000>; /* R2: 100k */
-		full-ohms = <200000>;  /* R1 (100k) + R2 (100k) */
+		full-ohms = <200000>; /* R1 (100k) + R2 (100k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -150,7 +150,7 @@
 		io-channels = <&wizard_adc 3>;
 		label = "AN_SCAP_PLUS";
 		output-ohms = <100000>; /* R2: 100k */
-		full-ohms = <200000>;  /* R1 (100k) + R2 (100k) */
+		full-ohms = <200000>; /* R1 (100k) + R2 (100k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -159,7 +159,7 @@
 		io-channels = <&wizard_adc 5>;
 		label = "AN_SUPER_CHRG";
 		output-ohms = <100000>; /* R2: 100k */
-		full-ohms = <200000>;  /* R1 (100k) + R2 (100k) */
+		full-ohms = <200000>; /* R1 (100k) + R2 (100k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -689,12 +689,12 @@
 
 	pinctrl_flexspi: flexspigrp {
 		fsl,pins = <
-			MX93_PAD_SD3_CMD__FLEXSPI1_A_SS0_B      0x42
-			MX93_PAD_SD3_CLK__FLEXSPI1_A_SCLK       0x42
-			MX93_PAD_SD3_DATA0__FLEXSPI1_A_DATA00   0x42
-			MX93_PAD_SD3_DATA1__FLEXSPI1_A_DATA01   0x42
-			MX93_PAD_SD3_DATA2__FLEXSPI1_A_DATA02   0x42
-			MX93_PAD_SD3_DATA3__FLEXSPI1_A_DATA03   0x42
+			MX93_PAD_SD3_CMD__FLEXSPI1_A_SS0_B	0x42
+			MX93_PAD_SD3_CLK__FLEXSPI1_A_SCLK	0x42
+			MX93_PAD_SD3_DATA0__FLEXSPI1_A_DATA00	0x42
+			MX93_PAD_SD3_DATA1__FLEXSPI1_A_DATA01	0x42
+			MX93_PAD_SD3_DATA2__FLEXSPI1_A_DATA02	0x42
+			MX93_PAD_SD3_DATA3__FLEXSPI1_A_DATA03	0x42
 		>;
 	};
 
@@ -725,14 +725,14 @@
 			MX93_PAD_ENET2_RD1__GPIO4_IO25			0x51e
 			MX93_PAD_ENET2_RD2__GPIO4_IO26			0x51e
 			MX93_PAD_ENET2_RD3__GPIO4_IO27			0x51e
-			MX93_PAD_ENET2_RXC__GPIO4_IO23                  0x51e
+			MX93_PAD_ENET2_RXC__GPIO4_IO23			0x51e
 			MX93_PAD_ENET2_RX_CTL__GPIO4_IO22		0x51e
 			MX93_PAD_ENET2_TD0__GPIO4_IO19			0x51e
 			MX93_PAD_ENET2_TD1__GPIO4_IO18			0x51e
 			MX93_PAD_ENET2_TD2__GPIO4_IO17			0x51e
 			MX93_PAD_ENET2_TD3__GPIO4_IO16			0x51e
-			MX93_PAD_ENET2_TXC__GPIO4_IO21                  0x51e
-			MX93_PAD_ENET2_TX_CTL__GPIO4_IO20               0x51e
+			MX93_PAD_ENET2_TXC__GPIO4_IO21			0x51e
+			MX93_PAD_ENET2_TX_CTL__GPIO4_IO20		0x51e
 		>;
 	};
 
