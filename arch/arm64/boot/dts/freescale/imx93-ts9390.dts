@@ -259,38 +259,31 @@
 		reset-gpios = <&fpga_gpio1 31 GPIO_ACTIVE_LOW>;
 	};
 
-        amp_reg: amp-supply {
-                compatible = "regulator-fixed";
-                regulator-name = "amp-enable";
-                gpio = <&fpga_gpio1 29 GPIO_ACTIVE_HIGH>;
-                enable-active-high;
-        };
-
 	imx_tac5111: sound-tac5111 {
-		compatible = "fsl,imx-audio-card";
-		model = "imx-tac5111";
-                amp-enable-supply = <&amp_reg>;
-		simple-audio-card,widgets =
-			"Microphone", "Line In",
-			"Headphone", "Line Out",
-			"Speaker", "Speaker Ext";
-                simple-audio-card,routing =
-                	"AIN1", "Line In",
-			"Line Out", "OUT1",
-			"Speaker Ext", "AMPVDD",
-                	"AMPVDD", "amp-enable";
+		compatible = "simple-audio-card";
+		simple-audio-card,bitclock-master = <&codec_dai>;
+		simple-audio-card,format = "i2s";
+		simple-audio-card,frame-master = <&codec_dai>;
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,name = "tac5111";
 
-		pri-dai-link {
-			link-name = "tac5111";
-			format = "i2s";
-			cpu {
-				sound-dai = <&sai1>;
-                                bitclock-master;
-                                frame-master;
-			};
-			codec {
-				sound-dai = <&tac5x1x>;
-			};
+		simple-audio-card,widgets =
+			"Line", "IN1P Line In",
+			"Line", "OUT1M Line Out";
+
+		simple-audio-card,routing =
+			"AIN1", "IN1P Line In",
+			"OUT1M Line Out", "OUT1";
+
+		simple-audio-card,codec {
+			sound-dai = <&tac5x1x>;
+		};
+
+		codec_dai: simple-audio-card,cpu {
+			sound-dai = <&sai1>;
+			bitclock-master;
+			frame-master;
+			system-clock-direction-out;
 		};
 	};
 
@@ -687,8 +680,8 @@
 		avdd-supply = <&reg_vref_3v3>;
 		iovdd-supply = <&reg_vref_3v3>;
 		ti,vref = <0>;
-                ti,adc1-impedance = <0>;
-		ti,micbias-vg = <3>;  /* make it same as AVDD */
+		ti,adc1-impedance = <0>;
+		ti,micbias-vg = <3>;
 		ti,gpi1-func = <0>;
 		ti,gpios-func = <0>, <0>, <0>;
 		ti,gpios-drive = <0>, <0>, <0>;
@@ -862,8 +855,7 @@
 
 	assigned-clocks = <&clk IMX93_CLK_SAI1>;
 	assigned-clock-parents = <&clk IMX93_CLK_AUDIO_PLL>;
-	/* assigned-clock-rates = <12288000>; */
-	assigned-clock-rates = <1536000>;
+	assigned-clock-rates = <12288000>;
 
 	fsl,sai-mclk-direction-output;
 	status = "okay";
