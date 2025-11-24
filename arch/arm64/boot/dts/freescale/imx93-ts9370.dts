@@ -334,34 +334,32 @@
 	};
 
 	imx_tac5111: sound-tac5111 {
-		compatible = "fsl,imx-audio-card";
-		model = "imx-tac5111";
-		amp-enable-supply = <&amp_reg>;
+		compatible = "simple-audio-card";
+		simple-audio-card,bitclock-master = <&codec_dai>;
+		simple-audio-card,format = "i2s";
+		simple-audio-card,frame-master = <&codec_dai>;
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,name = "tac5111";
+
+		/* --- Widgets --- */
 		simple-audio-card,widgets =
-			"Microphone", "Line In",
-			"Headphone", "Line Out",
-			"Speaker", "Speaker Ext";
+			"Line", "IN1P Line In",
+			"Line", "OUT1M Line Out";
+
+		/* --- Routing --- */
 		simple-audio-card,routing =
-			"AIN1", "Line In",
-			"Line Out", "OUT1",
-			"Speaker Ext", "AMPVDD",
-			"AMPVDD", "amp-enable";
-		status = "disabled";
+			"AIN1", "IN1P Line In",
+			"OUT1M Line Out", "OUT1";
 
-		pri-dai-link {
-			link-name = "tac5111";
-			format = "i2s";
+		simple-audio-card,codec {
+			sound-dai = <&tac5x1x>;
+		};
 
-			cpu {
-				sound-dai = <&sai1>;
-				bitclock-master;
-				frame-master;
-			};
-			codec {
-				sound-dai = <&tac5x1x>;
-				bitclock-master;
-				frame-master;
-			};
+		codec_dai: simple-audio-card,cpu {
+			sound-dai = <&sai1>;
+			bitclock-master;
+			frame-master;
+			system-clock-direction-out;
 		};
 	};
 };
@@ -709,14 +707,12 @@
 		compatible = "ti,tac5111";
 		reg = <0x50>;
 		#sound-dai-cells = <0>;
-		avdd-supply = <&reg_vref_1v8>;
-		iovdd-supply = <&reg_vref_1v8>;
-		status = "disabled";
-
+		avdd-supply = <&reg_vref_3v3>;
+		iovdd-supply = <&reg_vref_3v3>;
 		ti,vref = <0>;
-		ti,adc1-impedance = <0>;
-		ti,micbias-vg = <3>;  /* make it same as AVDD */
-		ti,gpi1-func = <1>;
+        ti,adc1-impedance = <0>;
+		ti,micbias-vg = <3>;
+		ti,gpi1-func = <0>;
 		ti,gpios-func = <0>, <0>, <0>;
 		ti,gpios-drive = <0>, <0>, <0>;
 		ti,gpa-gpio = <0>;
@@ -896,10 +892,10 @@
 
 	assigned-clocks = <&clk IMX93_CLK_SAI1>;
 	assigned-clock-parents = <&clk IMX93_CLK_AUDIO_PLL>;
-	assigned-clock-rates = <1536000>;
+	assigned-clock-rates = <12288000>;
 
 	fsl,sai-mclk-direction-output;
-	status = "disabled";
+	status = "okay";
 };
 
 &usbotg1 {
