@@ -30,7 +30,7 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-		
+
 		linux,cma {
 			compatible = "shared-dma-pool";
 			reusable;
@@ -78,7 +78,7 @@
 
 		ethosu_mem: ethosu-reserved@a5000000 {
 			compatible = "shared-dma-pool";
-			reg = <0x0 0xa5000000 0x0 0x10000000>;  /* 256 MB */
+			reg = <0x0 0xa5000000 0x0 0x10000000>; /* 256 MB */
 			reusable;
 		};
 	};
@@ -111,7 +111,7 @@
 		io-channels = <&spi_adc_mux 0>;
 		label = "AN_1";
 		output-ohms = <2000>; /* R2: 2k */
-		full-ohms = <8040>;  /* R1 (6.04k) + R2 (2k) */
+		full-ohms = <8040>; /* R1 (6.04k) + R2 (2k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -120,7 +120,7 @@
 		io-channels = <&spi_adc_mux 1>;
 		label = "AN_2";
 		output-ohms = <2000>; /* R2: 2k */
-		full-ohms = <8040>;  /* R1 (6.04k) + R2 (2k) */
+		full-ohms = <8040>; /* R1 (6.04k) + R2 (2k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -129,7 +129,7 @@
 		io-channels = <&spi_adc_mux 2>;
 		label = "AN_3";
 		output-ohms = <2000>; /* R2: 2k */
-		full-ohms = <8040>;  /* R1 (6.04k) + R2 (2k) */
+		full-ohms = <8040>; /* R1 (6.04k) + R2 (2k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -138,7 +138,7 @@
 		io-channels = <&spi_adc_mux 3>;
 		label = "AN_4";
 		output-ohms = <3010>; /* R2: 3.01k */
-		full-ohms = <50010>;  /* R1 (47k) + R2 (3.01k) */
+		full-ohms = <50010>; /* R1 (47k) + R2 (3.01k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -274,7 +274,7 @@
 		io-channels = <&wizard_adc 0>;
 		label = "VIN";
 		output-ohms = <4990>; /* R2: 4.9k */
-		full-ohms = <79990>;  /* R1 (75k) + R2 (4.99k) */
+		full-ohms = <79990>; /* R1 (75k) + R2 (4.99k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -283,7 +283,7 @@
 		io-channels = <&wizard_adc 1>;
 		label = "5.2V_A";
 		output-ohms = <75000>; /* R2: 75k */
-		full-ohms = <150000>;  /* R1 (75k) + R2 (75k) */
+		full-ohms = <150000>; /* R1 (75k) + R2 (75k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -292,7 +292,7 @@
 		io-channels = <&wizard_adc 2>;
 		label = "REG_5V";
 		output-ohms = <75000>; /* R2: 75k */
-		full-ohms = <150000>;  /* R1 (75k) + R2 (75k) */
+		full-ohms = <150000>; /* R1 (75k) + R2 (75k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -301,7 +301,7 @@
 		io-channels = <&wizard_adc 3>;
 		label = "VCHRG";
 		output-ohms = <75000>; /* R2: 75k */
-		full-ohms = <150000>;  /* R1 (75k) + R2 (75k) */
+		full-ohms = <150000>; /* R1 (75k) + R2 (75k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -310,7 +310,7 @@
 		io-channels = <&wizard_adc 4>;
 		label = "SCAP_PLUS";
 		output-ohms = <75000>; /* R2: 75k */
-		full-ohms = <150000>;  /* R1 (75k) + R2 (75k) */
+		full-ohms = <150000>; /* R1 (75k) + R2 (75k) */
 		#io-channel-cells = <0>;
 	};
 
@@ -322,7 +322,7 @@
 			&fpga_gpio0 24 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN) /* SDA */
 			&fpga_gpio0 25 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN) /* SCL */
 		>;
-		i2c-gpio,delay-us = <4>; /* ~92hz */
+		i2c-gpio,delay-us = <4>;
 		status = "okay";
 	};
 
@@ -341,12 +341,10 @@
 		simple-audio-card,mclk-fs = <256>;
 		simple-audio-card,name = "tac5111";
 
-		/* --- Widgets --- */
 		simple-audio-card,widgets =
 			"Line", "IN1P Line In",
 			"Line", "OUT1M Line Out";
 
-		/* --- Routing --- */
 		simple-audio-card,routing =
 			"AIN1", "IN1P Line In",
 			"OUT1M Line Out", "OUT1";
@@ -710,7 +708,7 @@
 		avdd-supply = <&reg_vref_3v3>;
 		iovdd-supply = <&reg_vref_3v3>;
 		ti,vref = <0>;
-        ti,adc1-impedance = <0>;
+		ti,adc1-impedance = <0>;
 		ti,micbias-vg = <3>;
 		ti,gpi1-func = <0>;
 		ti,gpios-func = <0>, <0>, <0>;
@@ -811,7 +809,7 @@
 		reg = <0>;
 		mux-controls = <&mux_spi>;
 		#address-cells = <1>;
-		#size-cells    = <0>;
+		#size-cells = <0>;
 
 		spi_adc: adc@0 {
 			compatible = "ti,adc121s021";
@@ -912,7 +910,7 @@
 	usb@1 {
 		compatible = "usb424,2514";
 		reg = <1>;
-		
+
 		//pinctrl-names = "default";
 		//pinctrl-0 = <&pinctrl_usbhub>;
 		reset-gpios = <&fpga_gpio1 4 GPIO_ACTIVE_LOW>;
@@ -1075,10 +1073,10 @@
 		fsl,pins = <
 			MX93_PAD_SD3_CMD__FLEXSPI1_A_SS0_B	0x42
 			MX93_PAD_SD3_CLK__FLEXSPI1_A_SCLK	0x42
-			MX93_PAD_SD3_DATA0__FLEXSPI1_A_DATA00   0x42
-			MX93_PAD_SD3_DATA1__FLEXSPI1_A_DATA01   0x42
-			MX93_PAD_SD3_DATA2__FLEXSPI1_A_DATA02   0x42
-			MX93_PAD_SD3_DATA3__FLEXSPI1_A_DATA03   0x42
+			MX93_PAD_SD3_DATA0__FLEXSPI1_A_DATA00	0x42
+			MX93_PAD_SD3_DATA1__FLEXSPI1_A_DATA01	0x42
+			MX93_PAD_SD3_DATA2__FLEXSPI1_A_DATA02	0x42
+			MX93_PAD_SD3_DATA3__FLEXSPI1_A_DATA03	0x42
 		>;
 	};
 
