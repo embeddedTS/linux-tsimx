@@ -50,6 +50,10 @@
 	linux,rs485-enabled-at-boot-time;
 };
 
+&reg_en_usb_host_5v {
+	status = "okay";
+};
+
 &wizard_silo {
 	status = "okay";
 };
