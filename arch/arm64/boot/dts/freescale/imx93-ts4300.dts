@@ -562,6 +562,12 @@
 	status = "okay";
 };
 
+&lpuart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
+	status = "okay";
+};
+
 &lpuart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5>;
@@ -806,6 +812,13 @@
 		fsl,pins = <
 			MX93_PAD_UART2_RXD__LPUART2_RX		0x31e
 			MX93_PAD_UART2_TXD__LPUART2_TX		0x31e
+		>;
+	};
+
+	pinctrl_uart4: uart4grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO15__LPUART4_RX		0x31e
+			MX93_PAD_GPIO_IO14__LPUART4_TX		0x31e
 		>;
 	};
 
