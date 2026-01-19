@@ -45,8 +45,7 @@
 };
 
 &lpuart2 {
-	uart-has-rtscts;
-	rts-gpios = <&fpga_gpio3 14 GPIO_ACTIVE_LOW>;
+	rts-gpios = <&fpga_gpio3 14 GPIO_ACTIVE_HIGH>;
 	linux,rs485-enabled-at-boot-time;
 };
 
