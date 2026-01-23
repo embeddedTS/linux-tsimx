@@ -585,6 +585,8 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-16.dtbo
 DTC_FLAGS_imx93-ts4300-16 := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-16-mipi2dp.dtbo
 DTC_FLAGS_imx93-ts4300-16-mipi2dp := -@
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-ld.dtbo
+DTC_FLAGS_imx93-ts4300-ld := -@
 
 dtb-$(CONFIG_ARCH_MXC) += imx91-9x9-qsb.dtb \
 			  imx91-9x9-qsb-can1.dtb \
