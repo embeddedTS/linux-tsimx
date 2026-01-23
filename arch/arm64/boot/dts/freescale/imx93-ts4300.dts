@@ -189,6 +189,10 @@
 	};
 };
 
+&ele_fw2 {
+	memory-region = <&ele_reserved>;
+};
+
 &aips2 {
 	fpga: fpga@425e0000 {
 		#address-cells = <1>;
