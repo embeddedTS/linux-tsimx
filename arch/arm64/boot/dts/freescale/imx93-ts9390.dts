@@ -265,7 +265,7 @@
 		simple-audio-card,format = "i2s";
 		simple-audio-card,frame-master = <&codec_dai>;
 		simple-audio-card,mclk-fs = <256>;
-		simple-audio-card,name = "tac5111";
+		simple-audio-card,name = "tsimx9";
 
 		simple-audio-card,widgets =
 			"Line", "IN1P Line In",

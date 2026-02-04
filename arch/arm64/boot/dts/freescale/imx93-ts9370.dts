@@ -326,20 +326,13 @@
 		status = "okay";
 	};
 
-	amp_reg: amp-supply {
-		compatible = "regulator-fixed";
-		regulator-name = "amp-enable";
-		gpio = <&fpga_gpio1 29 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-	};
-
 	imx_tac5111: sound-tac5111 {
 		compatible = "simple-audio-card";
 		simple-audio-card,bitclock-master = <&codec_dai>;
 		simple-audio-card,format = "i2s";
 		simple-audio-card,frame-master = <&codec_dai>;
 		simple-audio-card,mclk-fs = <256>;
-		simple-audio-card,name = "tac5111";
+		simple-audio-card,name = "tsimx9";
 
 		simple-audio-card,widgets =
 			"Line", "IN1P Line In",
