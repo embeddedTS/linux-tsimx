@@ -304,7 +304,6 @@ static int ts_silo_probe(struct platform_device *pdev)
 	struct power_supply_config psy_cfg = {};
 	int ret;
 	int irq;
-	unsigned int version;
 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	data->regmap = wizard->regmap;
@@ -330,16 +329,7 @@ static int ts_silo_probe(struct platform_device *pdev)
 	ret = devm_request_threaded_irq(dev, irq,
 					NULL, silo_irq_handler,
 					IRQF_ONESHOT, dev_name(dev), data);
-	if (ret)
-		return ret;
-
-	ret = regmap_read(data->regmap, SILO_RESERVED0, &version);
-	if (ret < 0)
-		return ret;
-	dev_info(dev, "TS-SILO version %d\n", version);
-	if (version < 2)
-		dev_warn(dev, "POWER_FAIL ignored without a Wizard interrupt controller.\n");
-	return 0;
+	return ret;
 }
 
 static void ts_silo_remove(struct platform_device *pdev)
