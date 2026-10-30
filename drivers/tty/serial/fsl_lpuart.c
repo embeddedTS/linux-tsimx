@@ -362,6 +362,7 @@ static const struct of_device_id lpuart_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
 
 /* Forward declare this for the dma callbacks*/
+static bool lpuart_is_32(struct lpuart_port *sport);
 static void lpuart_dma_tx_complete(void *arg);
 
 static inline bool is_layerscape_lpuart(struct lpuart_port *sport)
@@ -556,6 +557,8 @@ static void lpuart_dma_tx_complete(void *arg)
 	struct tty_port *tport = &sport->port.state->port;
 	struct dma_chan *chan = sport->dma_tx_chan;
 	unsigned long flags;
+	u32 ctrl;
+	u8 cr2;
 
 	uart_port_lock_irqsave(&sport->port, &flags);
 	if (!sport->dma_tx_in_progress) {
@@ -580,8 +583,18 @@ static void lpuart_dma_tx_complete(void *arg)
 
 	uart_port_lock_irqsave(&sport->port, &flags);
 
-	if (!lpuart_stopped_or_empty(&sport->port))
+	if (!lpuart_stopped_or_empty(&sport->port)) {
 		lpuart_dma_tx(sport);
+	} else if (sport->have_rtsgpio && sport->port.rs485.flags & SER_RS485_ENABLED) {
+		/* Enable TX complete interrupt to lower RTS when complete */
+		if (lpuart_is_32(sport)) {
+			ctrl = lpuart32_read(&sport->port, UARTCTRL);
+			lpuart32_write(&sport->port, ctrl | UARTCTRL_TCIE, UARTCTRL);
+		} else {
+			cr2 = readb(sport->port.membase + UARTCR2);
+			writeb(cr2 | UARTCR2_TCIE, sport->port.membase + UARTCR2);
+		}
+	}
 
 	uart_port_unlock_irqrestore(&sport->port, flags);
 }
@@ -818,11 +831,7 @@ static void lpuart_start_tx(struct uart_port *port)
 			struct lpuart_port, port);
 	u8 cr2;
 
-	if (sport->have_rtsgpio) {
-		/* Enable Transmit Complete interrupt to turn off RTS */
-		cr2 = readb(port->membase + UARTCR2);
-		writeb(cr2 | UARTCR2_TCIE, port->membase + UARTCR2);
-
+	if (sport->have_rtsgpio && port->rs485.flags & SER_RS485_ENABLED) {
 		if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
 			mctrl_gpio_set(sport->gpios, port->mctrl | TIOCM_RTS);
 		else
@@ -838,6 +847,12 @@ static void lpuart_start_tx(struct uart_port *port)
 	} else {
 		if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
 			lpuart_transmit_buffer(sport);
+
+		/* Enable Transmit Complete interrupt to turn off RTS */
+		if (sport->have_rtsgpio && port->rs485.flags & SER_RS485_ENABLED) {
+			cr2 = readb(port->membase + UARTCR2);
+			writeb(cr2 | UARTCR2_TCIE, port->membase + UARTCR2);
+		}
 	}
 }
 
@@ -846,11 +861,7 @@ static void lpuart32_start_tx(struct uart_port *port)
 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
 	u32 ctrl;
 
-	if (sport->have_rtsgpio) {
-		/* Enable Transmit Complete interrupt to turn off RTS */
-		ctrl = lpuart32_read(port, UARTCTRL);
-		lpuart32_write(port, ctrl | UARTCTRL_TCIE, UARTCTRL);
-
+	if (sport->have_rtsgpio && port->rs485.flags & SER_RS485_ENABLED) {
 		if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
 			mctrl_gpio_set(sport->gpios, port->mctrl | TIOCM_RTS);
 		else
@@ -866,6 +877,12 @@ static void lpuart32_start_tx(struct uart_port *port)
 
 		if (lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE)
 			lpuart32_transmit_buffer(sport);
+
+		/* Enable Transmit Complete interrupt to turn off RTS */
+		if (sport->have_rtsgpio && port->rs485.flags & SER_RS485_ENABLED) {
+			ctrl = lpuart32_read(port, UARTCTRL);
+			lpuart32_write(port, ctrl | UARTCTRL_TCIE, UARTCTRL);
+		}
 	}
 }
 
