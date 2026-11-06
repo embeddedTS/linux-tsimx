@@ -198,7 +198,8 @@ static int silo_get_property(struct power_supply *psy,
 		ret = regmap_test_bits(data->regmap, SILO_CONTROL, SILO_CONTROL_CHRG_EN);
 		if (ret < 0)
 			return ret;
-		val->intval = (ret ? POWER_SUPPLY_CHARGE_BEHAVIOUR_AUTO : POWER_SUPPLY_CHARGE_BEHAVIOUR_INHIBIT_CHARGE);
+		val->intval = (ret ? POWER_SUPPLY_CHARGE_BEHAVIOUR_AUTO :
+				POWER_SUPPLY_CHARGE_BEHAVIOUR_INHIBIT_CHARGE);
 		return 0;
 	case POWER_SUPPLY_PROP_ONLINE:
 		ret = regmap_read(data->regmap, SILO_STATUS, &reg);
@@ -262,7 +263,8 @@ static int silo_set_property(struct power_supply *psy,
 	} else if (psp == POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN)
 		ret = regmap_write(data->regmap, SILO_CRITICAL_PCT, val->intval);
 	else if (psp == POWER_SUPPLY_PROP_CHARGE_BEHAVIOUR) {
-		value = ((val->intval == POWER_SUPPLY_CHARGE_BEHAVIOUR_AUTO) ? SILO_CONTROL_CHRG_EN : 0);
+		value = ((val->intval == POWER_SUPPLY_CHARGE_BEHAVIOUR_AUTO) ?
+				SILO_CONTROL_CHRG_EN : 0);
 		ret = regmap_update_bits(data->regmap, SILO_CONTROL,
 					 SILO_CONTROL_CHRG_EN, value);
 	} else
@@ -306,6 +308,9 @@ static int ts_silo_probe(struct platform_device *pdev)
 	int irq;
 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+	if (!data) {
+		return -ENOMEM;
+	}
 	data->regmap = wizard->regmap;
 	platform_set_drvdata(pdev, data);
 
