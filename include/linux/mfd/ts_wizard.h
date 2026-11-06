@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-#ifndef __LINUX_MFD_TS_SUPERVISOR_H
-#define __LINUX_MFD_TS_SUPERVISOR_H
+#ifndef __LINUX_MFD_TS_WIZARD_H
+#define __LINUX_MFD_TS_WIZARD_H
 
 struct ts_wizard {
 	struct regmap *regmap;
