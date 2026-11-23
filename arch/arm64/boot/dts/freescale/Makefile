@@ -882,7 +882,18 @@ dtb-${CONFIG_ARCH_MXC} += imx8qxp-mek-max9286-rpmsg.dtb
 
 dtb-$(CONFIG_ARCH_MXC) += imx93-tqma9352-mba93xxca.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-tqma9352-mba93xxla.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300.dtb
+DTC_FLAGS_imx93-ts4300 := -@
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-16.dtbo
+DTC_FLAGS_imx93-ts4300-16 := -@
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-16-mipi2dp.dtbo
+DTC_FLAGS_imx93-ts4300-16-mipi2dp := -@
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts4300-ld.dtbo
+DTC_FLAGS_imx93-ts4300-ld := -@
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts9370.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-ts9390.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-var-som-symphony.dtb
+
 dtb-$(CONFIG_ARCH_MXC) += imx91-9x9-qsb.dtb \
 			  imx91-9x9-qsb-can1.dtb \
 			  imx91-9x9-qsb-flexspi-nand.dtb \
@@ -1010,6 +1021,8 @@ dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk-root.dtb
 
 dtb-$(CONFIG_ARCH_MXC) += imx95-jailhouse-inmate.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx95-19x19-frdm-pro-inmate.dtb
+
+dtb-$(CONFIG_ARCH_MXC) += imx95-ts11000.dtb
 
 imx95-15x15-evk-ox03c10-dtbs := imx95-15x15-evk.dtb imx95-15x15-evk-ox03c10.dtbo
 dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk-ox03c10.dtb

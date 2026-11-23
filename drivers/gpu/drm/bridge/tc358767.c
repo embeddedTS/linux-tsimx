@@ -399,6 +399,8 @@ struct tc_data {
 	int			hpd_pin;
 };
 
+static int tc_mipi_dsi_host_attach(struct tc_data *tc);
+
 static inline struct tc_data *aux_to_tc(struct drm_dp_aux *a)
 {
 	return container_of(a, struct tc_data, aux);
@@ -925,7 +927,7 @@ static int tc_set_common_video_mode(struct tc_data *tc,
 	 */
 	ret = regmap_write(tc->regmap, VPCTRL0,
 			   FIELD_PREP(VSDELAY, right_margin + 10) |
-			   OPXLFMT_RGB888 | FRMSYNC_ENABLED | MSF_DISABLED);
+			   OPXLFMT_RGB888 | FRMSYNC_DISABLED | MSF_DISABLED);
 	if (ret)
 		return ret;
 
@@ -1825,6 +1827,14 @@ static int tc_edp_bridge_attach(struct drm_bridge *bridge,
 	struct drm_device *drm = bridge->dev;
 	int ret;
 
+	if (tc->input_connector_dsi) {			/* DSI input */
+		ret = tc_mipi_dsi_host_attach(tc);
+		if (ret) {
+			drm_bridge_remove(&tc->bridge);
+			return dev_err_probe(tc->dev, ret, "Failed to attach DSI host\n");
+		}
+	}
+
 	if (tc->panel_bridge) {
 		/* If a connector is required then this driver shall create it */
 		ret = drm_bridge_attach(tc->bridge.encoder, tc->panel_bridge,
@@ -2302,8 +2312,9 @@ static int tc_mipi_dsi_host_attach(struct tc_data *tc)
 	tc->dsi = dsi;
 	dsi->lanes = dsi_lanes;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
-			  MIPI_DSI_MODE_LPM | MIPI_DSI_CLOCK_NON_CONTINUOUS;
+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO |
+			  MIPI_DSI_MODE_LPM |
+			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 
 	ret = devm_mipi_dsi_attach(dev, dsi);
 	if (ret < 0) {
@@ -2591,14 +2602,6 @@ static int tc_probe(struct i2c_client *client)
 	drm_bridge_add(&tc->bridge);
 
 	i2c_set_clientdata(client, tc);
-
-	if (tc->input_connector_dsi) {			/* DSI input */
-		ret = tc_mipi_dsi_host_attach(tc);
-		if (ret) {
-			drm_bridge_remove(&tc->bridge);
-			return dev_err_probe(dev, ret, "Failed to attach DSI host\n");
-		}
-	}
 
 	return 0;
 }

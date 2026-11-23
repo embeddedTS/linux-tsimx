@@ -190,7 +190,6 @@ static unsigned int num_fsp;
 static unsigned int fsp_table[3];
 static struct regulator *soc_reg;
 static struct regmap *regmap;
-static void *se_data;
 static struct kthread_worker *lpm_worker;
 static struct kthread_work reg_work;
 static int soc_reg_target;
@@ -243,6 +242,14 @@ static void lpm_update_all_clks(struct critical_clk_path *path,
 
 static void lpm_soc_reg_change_work(struct kthread_work *work)
 {
+	void *se_data;
+
+	se_data = imx_get_se_data_info(SOC_ID_OF_IMX93, 0);
+	if (!se_data) {
+		pr_err("Unable to get info from secure enclave\n");
+		return;
+	}
+
 	/* Set the voltage via ELE driver API */
 	imx_se_voltage_change_req(se_data, soc_reg, soc_reg_target, 0);
 }
@@ -261,9 +268,16 @@ static void lpm_soc_reg_volt_change(int target_uv)
 static void sys_freq_scaling(enum mode_type new_mode)
 {
 	struct critical_clk_path *path = system_run_mode.paths;
+	void *se_data;
 
 	if (new_mode == system_run_mode.current_mode) {
 		pr_debug("System already in target mode, do nothing\n");
+		return;
+	}
+
+	se_data = imx_get_se_data_info(SOC_ID_OF_IMX93, 0);
+	if (!se_data) {
+		pr_err("Unable to get info from secure enclave\n");
 		return;
 	}
 
@@ -633,12 +647,6 @@ static int imx93_lpm_probe(struct platform_device *pdev)
 	soc_reg = devm_regulator_get(&pdev->dev, "soc");
 	if (IS_ERR(soc_reg))
 		return PTR_ERR(soc_reg);
-
-	se_data = imx_get_se_data_info(SOC_ID_OF_IMX93, 0);
-	if (!se_data) {
-		dev_err(&pdev->dev, "get se-fw2 failed\n");
-		return -ENODEV;
-	}
 
 	/*
 	 * initial auto clock gating ssi strap, set to 32768 by default,
